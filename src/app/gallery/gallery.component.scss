@@ -3,19 +3,21 @@
     grid-template-columns: 30vw 70vw;
     box-sizing: border-box;
     background: #272D2D;
+    height: 100vh;
     // margin-inline: 400px 0;
+    --gap: 30px;
 }
 
 .gallery {
-    --gap: 30px;
-
+    
     &-list {
         grid-area: 1/2;
         list-style: none;
         padding: 0;
         margin: 0;
         display: flex;
-        gap: 30px;
+        align-items: center;
+        gap: var(--gap);
         overflow-x: auto;
         scroll-snap-type: x mandatory;
         scroll-behavior: smooth;

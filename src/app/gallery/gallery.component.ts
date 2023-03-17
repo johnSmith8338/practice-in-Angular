@@ -9,7 +9,7 @@ import { ChangeDetectionStrategy, Component, HostListener, OnInit } from '@angul
 export class GalleryComponent implements OnInit {
 
   @HostListener('window:scroll', ['$event']) // for window scroll events
-  onScroll() {
+  onWindowScroll() {
   console.log();
 }
 
