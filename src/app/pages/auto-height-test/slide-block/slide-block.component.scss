@@ -1,0 +1,24 @@
+:host {
+    display: grid;
+    grid-template-rows: 0fr;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0 0 4.375rem;
+    position: fixed;
+    bottom: 0;
+    background: orange;
+    border-radius: 1rem 1rem 0 0;
+    transition: grid-template-rows 300ms ease-out;
+}
+
+:host(.opened) {
+    grid-template-rows: 1fr;
+}
+
+ol {
+    overflow: hidden;
+}
+
+li {
+    padding: 0.5rem;
+}

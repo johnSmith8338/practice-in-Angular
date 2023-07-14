@@ -1,0 +1,7 @@
+<p>parent works!</p>
+<br>
+<button (click)="showText($event)">show me smth</button>
+
+<!-- <input type="text" (change)="parentValue = $event.target.value"> -->
+
+<app-child *ngIf="show" [value]="parentValue"></app-child>

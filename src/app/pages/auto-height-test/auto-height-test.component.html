@@ -1,0 +1,2 @@
+<app-slide-block [ngClass]="{opened: isBlockOpened}"></app-slide-block>
+<app-bottom-block [click]="isBlockOpened" (clickChanged)="isClickChanged($event)"></app-bottom-block>
