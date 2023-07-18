@@ -6,14 +6,19 @@
     bottom: 0;
     width: 100%;
     margin: 0;
-    padding: 1rem 0;
+    padding: 1rem;
     background: dimgray;
     height: 4.375rem;
     border-radius: 1rem 1rem 0 0;
 }
 
+.button-block {
+    display: flex;
+    gap: 0.5rem;
+}
+
 button {
-    font-size: 1rem;
+    font-size: 0.75rem;
     font-weight: 600;
     padding: 0.5rem 2rem;
     border: transparent;
@@ -21,4 +26,8 @@ button {
     outline: transparent;
     background: orange;
     cursor: pointer;
+
+    &:nth-child(2) {
+        background: darkorange;
+    }
 }

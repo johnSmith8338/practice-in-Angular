@@ -8,8 +8,13 @@ import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core
 })
 export class AutoHeightTestComponent implements OnInit {
   isBlockOpened = false;
+  isBlockOpenedTwo = false;
+
   isClickChanged(click:boolean) {
     this.isBlockOpened = click;
+  }
+  isClickChangedTwo(clickTwo:boolean) {
+    this.isBlockOpenedTwo = clickTwo;
   }
 
   constructor() { }

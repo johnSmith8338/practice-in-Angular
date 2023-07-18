@@ -7,9 +7,31 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SlideBlockComponent implements OnInit {
+  testList: any[] = [
+    {
+      content: 'Lorem ipsum dolor sit amet.'
+    },
+    {
+      content: 'Recusandae eum error voluptatibus maiores.'
+    },
+    {
+      content: 'Qui cum modi exercitationem aperiam.'
+    },
+    {
+      content: 'Lorem ipsum dolor sit amet.'
+    },
+    {
+      content: 'Recusandae eum error voluptatibus maiores.'
+    },
+    {
+      content: 'Qui cum modi exercitationem aperiam.'
+    },
+  ];
 
+  listLength = this.testList.length;
+  
   constructor() { }
-
+  
   ngOnInit(): void {
   }
 

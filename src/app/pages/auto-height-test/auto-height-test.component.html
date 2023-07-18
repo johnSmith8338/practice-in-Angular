@@ -1,2 +1,8 @@
-<app-slide-block [ngClass]="{opened: isBlockOpened}"></app-slide-block>
-<app-bottom-block [click]="isBlockOpened" (clickChanged)="isClickChanged($event)"></app-bottom-block>
+<app-slide-block 
+    [ngClass]="{opened: isBlockOpened}" 
+    [ngClass]="{openedMore: isBlockOpenedTwo}"
+></app-slide-block>
+<app-bottom-block 
+    [click]="isBlockOpened" (clickChanged)="isClickChanged($event)"
+    [clickTwo]="isBlockOpenedTwo" (clickChangedTwo)="isClickChangedTwo($event)"
+    ></app-bottom-block>
