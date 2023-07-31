@@ -10,6 +10,7 @@ import { LinkDirectiveTestComponent } from './pages/link-directive-test/link-dir
 import { AutoHeightTestComponent } from './pages/auto-height-test/auto-height-test.component';
 import { BottomBlockComponent } from './pages/auto-height-test/bottom-block/bottom-block.component';
 import { SlideBlockComponent } from './pages/auto-height-test/slide-block/slide-block.component';
+import { RxjsTestComponent } from './pages/rxjs-test/rxjs-test.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import { SlideBlockComponent } from './pages/auto-height-test/slide-block/slide-
     LinkDirectiveTestComponent,
     AutoHeightTestComponent,
     BottomBlockComponent,
-    SlideBlockComponent
+    SlideBlockComponent,
+    RxjsTestComponent
   ],
   imports: [
     BrowserModule
