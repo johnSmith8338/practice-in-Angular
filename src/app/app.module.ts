@@ -11,6 +11,7 @@ import { AutoHeightTestComponent } from './pages/auto-height-test/auto-height-te
 import { BottomBlockComponent } from './pages/auto-height-test/bottom-block/bottom-block.component';
 import { SlideBlockComponent } from './pages/auto-height-test/slide-block/slide-block.component';
 import { RxjsTestComponent } from './pages/rxjs-test/rxjs-test.component';
+import { RxjsTestClearComponent } from './pages/rxjs-test-clear/rxjs-test-clear.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import { RxjsTestComponent } from './pages/rxjs-test/rxjs-test.component';
     AutoHeightTestComponent,
     BottomBlockComponent,
     SlideBlockComponent,
-    RxjsTestComponent
+    RxjsTestComponent,
+    RxjsTestClearComponent
   ],
   imports: [
     BrowserModule
