@@ -12,6 +12,11 @@ import { BottomBlockComponent } from './pages/auto-height-test/bottom-block/bott
 import { SlideBlockComponent } from './pages/auto-height-test/slide-block/slide-block.component';
 import { RxjsTestComponent } from './pages/rxjs-test/rxjs-test.component';
 import { RxjsTestClearComponent } from './pages/rxjs-test-clear/rxjs-test-clear.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { GridCardLayoutComponent } from './grid-card-layout/grid-card-layout.component';
+import { MatCardModule } from '@angular/material/card';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
   declarations: [
@@ -25,10 +30,20 @@ import { RxjsTestClearComponent } from './pages/rxjs-test-clear/rxjs-test-clear.
     BottomBlockComponent,
     SlideBlockComponent,
     RxjsTestComponent,
-    RxjsTestClearComponent
+    RxjsTestClearComponent,
+    GridCardLayoutComponent,
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    BrowserAnimationsModule,
+    MatCardModule,
+    MatGridListModule,
+    MatIconModule
+  ],
+  exports: [
+    MatCardModule,
+    MatGridListModule,
+    MatIconModule
   ],
   providers: [],
   bootstrap: [AppComponent]

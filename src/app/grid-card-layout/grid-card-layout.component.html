@@ -1,0 +1,45 @@
+<div class="grid-container">
+    <mat-grid-list cols="2" rowHeight="100px">
+  
+      <mat-grid-tile [colspan]="1" [rowspan]="2">
+        <mat-card class="dashboard-card">
+          <mat-card-header>
+            <mat-card-title>
+  
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content class="dashboard-card-content">
+            <div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </mat-grid-tile>
+  
+  
+        <mat-grid-tile [colspan]="1" [rowspan]="2" >
+            <div class='flippable-card' [ngClass]="{'flipped':flipped}" >
+            </div>
+        </mat-grid-tile>
+      <mat-grid-tile [colspan]="1" [rowspan]="3">
+          <div class='flippable-card' [ngClass]="{'flipped':flipped}" >
+              <mat-card class="dashboard-card">
+                <!-- <mat-card-title><button class="more-button" mat-icon-button (click)='flipped = !flipped'><mat-icon>flip</mat-icon></button></mat-card-title> -->
+                <mat-card-title>
+                  <button class="more-button-right" mat-icon-button (click)='flipped = !flipped'><mat-icon>flip_camera_android</mat-icon></button>
+                </mat-card-title>
+                <mat-card-content>
+                   FRONT SIDE
+                </mat-card-content>
+              </mat-card>
+              <mat-card class='dashboard-card back'>
+                <mat-card-title>
+                  <button class="more-button-right" mat-icon-button (click)='flipped = !flipped'><mat-icon>flip_camera_android</mat-icon></button>
+                </mat-card-title>
+                <mat-card-content>
+                     BACK SIDE
+                </mat-card-content>
+              </mat-card>
+          </div>
+        </mat-grid-tile>   
+    </mat-grid-list>
+  </div>
