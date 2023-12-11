@@ -14,7 +14,7 @@ import { RxjsTestComponent } from './pages/rxjs-test/rxjs-test.component';
 import { RxjsTestClearComponent } from './pages/rxjs-test-clear/rxjs-test-clear.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { GridCardLayoutComponent } from './grid-card-layout/grid-card-layout.component';
-import { MatCardModule } from '@angular/material/card';
+import { MatLegacyCardModule as MatCardModule } from '@angular/material/legacy-card';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatIconModule } from '@angular/material/icon';
 
