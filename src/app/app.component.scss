@@ -5,3 +5,27 @@
     padding: 0;
     position: relative;
 }
+swiper-slide {
+    height: 400px;
+    display: grid;
+    place-items: center;
+    color: white;
+    &:nth-child(1) {
+        background: red;
+    }
+    &:nth-child(2) {
+        background: green;
+    }
+    &:nth-child(3) {
+        background: blue;
+    }
+}
+.swiper-2 {
+    swiper-slide {
+        background: black;
+        width: 24px;
+        height: 48px;
+        display: grid;
+        place-items: center;
+    }
+}

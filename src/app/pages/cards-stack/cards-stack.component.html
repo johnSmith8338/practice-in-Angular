@@ -1,0 +1,34 @@
+<!-- <ul class="cards">
+    <li class="cards-item" 
+        *ngFor="let item of data; let i = index" 
+        (click)="clickSlide(i)" 
+        [ngClass]="{'clicked': i === activeIndex, 'top': i === 0}"
+        [@slideAnimation]="state"
+    >
+        <img class="img" [src]='item.srcUrl' alt="">
+    </li>
+</ul>
+<ul class="pagination" >
+    <li class="dot" 
+        *ngFor="let dot of dots; let i=index" 
+        [ngClass]="{'active': i === activeIndex}"
+        (click)="clickDot(i)"
+    ></li>
+</ul> -->
+<ul class="cards">
+    <li class="cards-item" 
+        *ngFor="let item of data" 
+        (click)="clickSlide(item.index)" 
+        [ngClass]="{'clicked': item.index === activeIndex, 'top': item.index === 0}"
+        [@slideAnimation]="state"
+    >
+      <img class="img" [src]="item.srcUrl" alt="">
+    </li>
+</ul>
+
+<ul class="pagination">
+    <li class="dot" *ngFor="let dot of dots; let i = index" 
+        [ngClass]="{'active': i === 0 && activeIndex === null || i === activeIndex}" 
+        (click)="clickDot(i)">
+    </li>
+</ul>
