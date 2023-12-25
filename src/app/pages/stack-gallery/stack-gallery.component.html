@@ -1,0 +1,25 @@
+<ul class="slide-list">
+    <li class="slide-item" 
+        *ngFor="let item of (slides|async)?.slice(0, maxVisibleSlides); let isFirst = first; let isLast = last"
+        [ngClass]="{active: activeIndex === item.index}"
+        (click)="clickSlide(item.index)"
+        [style.width.px]="getSlideWidth()"
+        [style.height.px]="getSlideHeight()"
+        [style.margin-left.px]="getMarginLeft(isFirst)"
+        [style.z-index]="item.zIndex"
+    >
+        <ng-container >
+            <img [src]="item.srcUrl" alt="" class="slide-img">
+            <span>slideIndex: {{item.index}}</span>
+        </ng-container>
+    </li>
+</ul>
+<ul class="pagination-list">
+    <li class="pagination-item"
+        *ngFor="let item of slides|async; let isFirst = first; let isLast = last"
+        [ngClass]="{active: activeIndex === item.index}"
+        (click)="clickPagination(item.index)"
+    >
+    <span>{{item.index}}</span>
+    </li>
+</ul>

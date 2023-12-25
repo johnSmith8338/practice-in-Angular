@@ -65,6 +65,14 @@ export class CardsStackComponent implements OnDestroy{
       srcUrl: 'https://preview.ibb.co/mwsA6R/img7.jpg',
       index: 2,
     },
+    {
+      srcUrl: 'https://preview.ibb.co/jrsA6R/img12.jpg',
+      index: 3,
+    },
+    {
+      srcUrl: 'https://preview.ibb.co/mwsA6R/img7.jpg',
+      index: 4,
+    },
   ];
   
   activeIndex:number|null = null;

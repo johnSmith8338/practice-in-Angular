@@ -24,6 +24,8 @@ import 'hammerjs';
 import { CardsStackComponent } from './pages/cards-stack/cards-stack.component';
 import { CardStackService } from './pages/cards-stack/cards-stack.service';
 import { CatComponent } from './pages/cat/cat.component';
+import { StackGalleryComponent } from './pages/stack-gallery/stack-gallery.component';
+import { HttpClientModule } from '@angular/common/http';
 // register Swiper custom elements
 register();
 
@@ -50,7 +52,9 @@ register();
     MatIconModule,
     CardsGalleryComponent,
     CardsStackComponent,
-    CatComponent
+    CatComponent,
+    StackGalleryComponent,
+    HttpClientModule
   ],
   exports: [
     MatCardModule,
