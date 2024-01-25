@@ -54,7 +54,7 @@ register();
     CardsStackComponent,
     CatComponent,
     StackGalleryComponent,
-    HttpClientModule
+    HttpClientModule,
   ],
   exports: [
     MatCardModule,

@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, ElementRef, HostListener, Inject, O
 import { ServerSlide, Slide, StackGalleryService } from './stack-gallery.service';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map, of, take } from 'rxjs';
+import { animate, state, style, transition, trigger } from '@angular/animations';
 
 @Component({
   selector: 'app-stack-gallery',
@@ -14,6 +15,20 @@ import { Observable, map, of, take } from 'rxjs';
   templateUrl: './stack-gallery.component.html',
   styleUrls: ['./stack-gallery.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  animations: [
+    trigger('slideAnimation', [
+      state('visible', style({
+        opacity: 1,
+        transform: 'translateX(0)',
+      })),
+      state('hidden', style({
+        opacity: 0,
+        transform: 'translateX(-100%)',
+      })),
+      transition('hidden => visible', animate('300ms ease-in')),
+      transition('visible => hidden', animate('300ms ease-out')),
+    ]),
+  ],
 })
 export class StackGalleryComponent implements OnInit, OnDestroy {
   gallerySvc = inject(StackGalleryService);
@@ -22,12 +37,14 @@ export class StackGalleryComponent implements OnInit, OnDestroy {
   private element = inject(ElementRef);
   slides: Observable<Slide[]> = new Observable();
   visibleSlides: Observable<Slide[]> = new Observable();
-  currentIndex = this.gallerySvc.currentIndex;
 
   viewportWidth?: number;
   maxVisibleSlides = 5; // количество видимых слайдов
   visibleSlideCount = 0;
-  activeIndex: number|null = null;
+  activeIndex: number = 0;
+  currentIndex:number = 0;
+  animationState:string = 'visible';
+  animationInProgress = false;
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
@@ -44,7 +61,7 @@ export class StackGalleryComponent implements OnInit, OnDestroy {
         const totalSlides = slides.length;
         return slides.map((slide, index) =>({
           ...slide,
-          zIndex: this.getZIndex(totalSlides, index),
+          zIndex: this.getZIndex(totalSlides, index, 0),
         }));
       })
     );
@@ -95,8 +112,10 @@ export class StackGalleryComponent implements OnInit, OnDestroy {
     }
   }
 
-  getZIndex(totalSlides: number, currentIndex: number) {
-    return totalSlides - currentIndex - 1;
+  getZIndex(totalSlides: number, currentIndex: number, activeIndex: number) {
+    const currentIndexAdjusted = activeIndex ?? 0;
+    const difference = currentIndex - currentIndexAdjusted;
+    return totalSlides - Math.abs(difference) - 1;
   }
   
   // функция, которая выпоолняется при клике на слайд, кроме первого
@@ -107,7 +126,6 @@ export class StackGalleryComponent implements OnInit, OnDestroy {
   // функция, которая выпоолняется при клике на слайд, кроме первого
   clickPagination(index: number): void {
     this.activeIndex = index;
-    console.log(this.visibleSlideCount)
   }
 
   ngOnDestroy(): void {
