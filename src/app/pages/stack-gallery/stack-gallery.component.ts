@@ -1,34 +1,34 @@
 import { CommonModule, DOCUMENT } from '@angular/common';
-import { ChangeDetectionStrategy, Component, ElementRef, HostListener, Inject, OnDestroy, OnInit, Renderer2, computed, inject, signal } from '@angular/core';
-import { ServerSlide, Slide, StackGalleryService } from './stack-gallery.service';
+import { ChangeDetectionStrategy, Component, ElementRef, HostListener, Inject, OnDestroy, OnInit, Renderer2, inject } from '@angular/core';
+import { Slide, StackGalleryService } from './stack-gallery.service';
 import { HttpClient } from '@angular/common/http';
-import { Observable, map, of, take } from 'rxjs';
-import { animate, state, style, transition, trigger } from '@angular/animations';
+import { Observable, map, take } from 'rxjs';
+import { HammerGestureConfig, HAMMER_GESTURE_CONFIG, HammerModule } from '@angular/platform-browser';
+import * as Hammer from 'hammerjs';
+
+// export class MyHammerConfig extends HammerGestureConfig {
+//   override overrides = {
+//     swipe: {direction: Hammer.DIRECTION_HORIZONTAL},
+//   }
+// }
 
 @Component({
   selector: 'app-stack-gallery',
   standalone: true,
   imports: [
     CommonModule,
+    HammerModule,
   ],
-  providers:[],
+  providers:[
+    // {
+    //   provide: HAMMER_GESTURE_CONFIG,
+    //   useClass: MyHammerConfig,
+    // }
+  ],
   templateUrl: './stack-gallery.component.html',
   styleUrls: ['./stack-gallery.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  animations: [
-    trigger('slideAnimation', [
-      state('visible', style({
-        opacity: 1,
-        transform: 'translateX(0)',
-      })),
-      state('hidden', style({
-        opacity: 0,
-        transform: 'translateX(-100%)',
-      })),
-      transition('hidden => visible', animate('300ms ease-in')),
-      transition('visible => hidden', animate('300ms ease-out')),
-    ]),
-  ],
+  animations: [],
 })
 export class StackGalleryComponent implements OnInit, OnDestroy {
   gallerySvc = inject(StackGalleryService);
@@ -113,7 +113,14 @@ export class StackGalleryComponent implements OnInit, OnDestroy {
     const totalWidth = this.getSliderWidth();
     const slideWidth = this.getSlideWidth();
     const spacing = (totalWidth - slideWidth) / (this.visibleSlideCount - 1);
-    return Math.round(spacing * index);
+    if(index === this.activeIndex) {
+      return 0;
+    }else if(index >= this.activeIndex && index < (this.activeIndex + this.maxVisibleSlides)) {
+      const offset = index > this.activeIndex ? slideWidth : 0;
+      return Math.round(spacing * (index - this.activeIndex));
+    }else{
+      return 0;
+    }
   }
 
   getZIndex(totalSlides: number, currentIndex: number, activeIndex: number) {
@@ -130,6 +137,43 @@ export class StackGalleryComponent implements OnInit, OnDestroy {
   // функция, которая выпоолняется при клике на слайд, кроме первого
   clickPagination(index: number): void {
     this.activeIndex = index;
+  }
+
+  // @HostListener('swipeleft', ['$event'])
+  // onSwipeLeft(event: Event): void {
+  //   this.handleSwipe('left', this.activeIndex);
+  // }
+  // @HostListener('swipeRight', ['$event'])
+  // onSwipeRight(event: Event): void {
+  //   this.handleSwipe('right', this.activeIndex);
+  // }
+
+  // handleSwipe(direction: string, index:number): void {
+  //   if (direction === 'left') {
+  //     // Handle swipe left, e.g., go to the next slide
+  //     this.nextSlide(index);
+  //   } else if (direction === 'right') {
+  //     // Handle swipe right, e.g., go to the previous slide
+  //     this.previousSlide(index);
+  //   }
+  // }
+  nextSlide(index:number):void {
+    this.slides.subscribe(slides => {
+      // if(this.activeIndex < slides.length - 1) {
+      //   this.activeIndex = index + 1;
+      // }
+      const lastIndex = slides.length - 1;
+      this.activeIndex = index < lastIndex ? index + 1 : 0;
+    });
+  }
+  previousSlide(index:number):void {
+    // if(this.activeIndex > 0) {
+    //   this.activeIndex = index - 1;
+    // }
+    this.slides.subscribe(slides => {
+      const lastIndex = slides.length - 1;
+      this.activeIndex = index > 0 ? index - 1 : lastIndex;
+    });
   }
 
   ngOnDestroy(): void {

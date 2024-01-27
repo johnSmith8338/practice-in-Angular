@@ -7,8 +7,7 @@
         <li class="slide-item" 
             *ngFor="let item of slidesData; let isFirst = first; let isLast = last"
             [ngClass]="{
-                active: activeIndex === item.index, 
-                margin: activeIndex === item.index,
+                active: activeIndex === item.index,
                 invisible: !(item.index >= activeIndex && item.index < (activeIndex + maxVisibleSlides)),
                 }"
             (click)="clickSlide(item.index)"
@@ -18,7 +17,10 @@
             [style.z-index]="getZIndex(slidesData.length, item.index, activeIndex)"
         >
             <ng-container >
-                <img [src]="item.srcUrl" alt="" class="slide-img">
+                <img [src]="item.srcUrl" alt="" class="slide-img"
+                    (panright)="previousSlide(item.index)"
+                    (panleft)="nextSlide(item.index)"
+                >
                 <span>index: {{item.index}}</span>
             </ng-container>
         </li>
