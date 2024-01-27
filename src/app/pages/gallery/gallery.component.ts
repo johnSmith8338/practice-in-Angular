@@ -23,6 +23,7 @@ export class GalleryComponent implements OnInit {
   slides: Observable<Slide[]> = new Observable();
   activeIndex: number = 0;
   currentIndex:number = 0;
+  lastIndex: number = 0;
 
   constructor() { }
 
@@ -42,6 +43,9 @@ export class GalleryComponent implements OnInit {
     // this.slides.subscribe(slides => {
     //   const slidesLenght = slides.length;
     // });
+    this.slides.subscribe(slides => {
+      this.lastIndex = slides.length - 1; // Declare lastIndex here
+    });
   }
 
   // getZIndex(totalSlides: number, currentIndex: number, activeIndex: number) {
@@ -52,42 +56,14 @@ export class GalleryComponent implements OnInit {
 
   showPrev(index: number) {
     this.slides.subscribe(slides => {
-      if(this.activeIndex === 0) {
-        this.activeIndex = slides.length - 1;
-      }else{
-        this.activeIndex = index - 1;
-      }
+      // const lastIndex = slides.length - 1;
+      this.activeIndex = index > 0 ? index - 1 : this.lastIndex;
     });
-
-    // if(this.activeIndex > 0) {
-    //   this.activeIndex = index - 1;
-    // }
-
-    // this.slides.subscribe(slides => {
-    //   if(this.activeIndex === 0) {
-    //     this.activeIndex = slides.length - 1;
-    //   }else{
-    //     this.activeIndex--;
-    //   }
-    // });
   }
   showNext(index: number) {
     this.slides.subscribe(slides => {
-      if(this.activeIndex === slides.length - 1) {
-        this.activeIndex = 0;
-      }else{
-        this.activeIndex = index + 1;
-      }
-
-      // if(this.activeIndex < slides.length - 1) {
-      //   this.activeIndex = index + 1;
-      // }
-
-      // if(this.activeIndex === slides.length - 1) {
-      //   this.activeIndex = 0;
-      // }else{
-      //   this.activeIndex++;
-      // }
+      // const lastIndex = slides.length - 1;
+      this.activeIndex = index < this.lastIndex ? index + 1 : 0;
     });
   }
   selectActiveSlide(index: number) {

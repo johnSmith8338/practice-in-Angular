@@ -6,7 +6,7 @@
             [ngClass]="{
                 selected: item.index === activeIndex,
                 prev: item.index === activeIndex - 1,
-                next: item.index === activeIndex + 1,
+                next: (item.index === activeIndex + 1 && activeIndex !== lastIndex) || (activeIndex === lastIndex && item.index === 0),
                 hideLeft: item.index < activeIndex - 1,
                 hideRight: item.index > activeIndex + 1
             }"
