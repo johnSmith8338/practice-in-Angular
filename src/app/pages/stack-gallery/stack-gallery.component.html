@@ -1,4 +1,8 @@
-<ul class="slide-list" *ngIf="(slides|async) as slidesData">
+<ul class="slide-list" 
+    *ngIf="(slides|async) as slidesData" 
+    [style.height.px]="getSlideHeight()" 
+    [style.width.px]="getSliderWidth()"
+>
     <ng-container >
         <li class="slide-item" 
             *ngFor="let item of slidesData; let isFirst = first; let isLast = last"
@@ -10,7 +14,7 @@
             (click)="clickSlide(item.index)"
             [style.width.px]="getSlideWidth()"
             [style.height.px]="getSlideHeight()"
-            [style.margin-left.px]="getMarginLeft(isFirst)"
+            [style.left.px]="getLeftPosition(item.index)"
             [style.z-index]="getZIndex(slidesData.length, item.index, activeIndex)"
         >
             <ng-container >

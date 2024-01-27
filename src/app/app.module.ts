@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA ,NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
+import { BrowserModule, HammerModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
 import { GalleryComponent } from './pages/gallery/gallery.component';
@@ -20,7 +20,7 @@ import { MatIconModule } from '@angular/material/icon';
 // import function to register Swiper custom elements
 import { register } from 'swiper/element/bundle';
 import { CardsGalleryComponent } from './pages/cards-gallery/cards-gallery.component';
-import 'hammerjs';
+// import 'hammerjs';
 import { CardsStackComponent } from './pages/cards-stack/cards-stack.component';
 import { CardStackService } from './pages/cards-stack/cards-stack.service';
 import { CatComponent } from './pages/cat/cat.component';
@@ -32,7 +32,6 @@ register();
 @NgModule({
   declarations: [
     AppComponent,
-    GalleryComponent,
     ParentComponent,
     ChildComponent,
     LinkHoverDirective,
@@ -55,6 +54,8 @@ register();
     CatComponent,
     StackGalleryComponent,
     HttpClientModule,
+    GalleryComponent,
+    HammerModule,
   ],
   exports: [
     MatCardModule,

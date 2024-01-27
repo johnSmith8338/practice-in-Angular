@@ -97,6 +97,10 @@ export class StackGalleryComponent implements OnInit, OnDestroy {
   getSlideWidth() {
     return this.getViewportWidth() >= 1200 ? 960 : 710;
   };
+
+  getSliderWidth() {
+    return this.getViewportWidth() - 40;
+  };
   
   // высота слайда соответствующая ширине слайда
   getSlideHeight() {
@@ -104,12 +108,12 @@ export class StackGalleryComponent implements OnInit, OnDestroy {
   }
   
   // отступ в левую сторону, чтоб показать только часть нижнего слайда
-  getMarginLeft(isFirst: boolean) {
-    if(isFirst) {
-      return 0;
-    }else{
-      return Math.round((this.getSlideWidth() - (this.getViewportWidth() - this.getSlideWidth())/(this.visibleSlideCount - 1)) * -1);
-    }
+  getLeftPosition(index: number) {
+    // return Math.round((this.getSlideWidth() - (this.getViewportWidth() - this.getSlideWidth())/(this.visibleSlideCount - 1)));
+    const totalWidth = this.getSliderWidth();
+    const slideWidth = this.getSlideWidth();
+    const spacing = (totalWidth - slideWidth) / (this.visibleSlideCount - 1);
+    return Math.round(spacing * index);
   }
 
   getZIndex(totalSlides: number, currentIndex: number, activeIndex: number) {

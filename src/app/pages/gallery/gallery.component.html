@@ -1,9 +1,32 @@
-<ul class="gallery-list">
-    <li class="gallery-item">1</li>
-    <li class="gallery-item">2</li>
-    <li class="gallery-item">3</li>
-    <li class="gallery-item">4</li>
-    <li class="gallery-item">5</li>
-    <li class="gallery-item">6</li>
-    <li class="gallery-item">7</li>
-</ul>
+<div class="container">
+    <div class="slider-container" *ngIf="slides|async as slideData">
+        <div 
+            class="slider-item" 
+            *ngFor="let item of slideData"
+            [ngClass]="{
+                selected: item.index === activeIndex,
+                prev: item.index === activeIndex - 1,
+                next: item.index === activeIndex + 1,
+                hideLeft: item.index < activeIndex - 1,
+                hideRight: item.index > activeIndex + 1
+            }"
+        >
+            <img 
+                class="slider-img"
+                [src]="item.srcUrl" 
+                alt="gallery-image"
+                (panright)="showPrev(item.index)"
+                (panleft)="showNext(item.index)"
+                (click)="selectActiveSlide(item.index)"
+            >
+            <span>{{item.index}}</span>
+        </div>
+    </div>
+</div>
+<div class="pagination" *ngIf="slides|async as slideData">
+    <span 
+        *ngFor="let item of slideData"
+        [ngClass]="{selected: item.index === activeIndex}"
+        (click)="selectActiveSlide(item.index)"
+    ></span>
+</div>

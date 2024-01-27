@@ -7,7 +7,7 @@ export interface ServerSlide {
 }
 export interface Slide extends ServerSlide {
   index: number;
-  zIndex: number;
+  // zIndex: number;
 }
 
 @Injectable({
