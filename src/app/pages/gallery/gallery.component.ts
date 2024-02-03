@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { Slide, StackGalleryService } from '../stack-gallery/stack-gallery.service';
 import { Observable, map } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
@@ -17,7 +17,7 @@ import { HammerModule } from '@angular/platform-browser';
   styleUrls: ['./gallery.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class GalleryComponent implements OnInit {
+export class GalleryComponent implements OnInit, OnDestroy {
   gallerySvc = inject(StackGalleryService);
   private http = inject(HttpClient);
   slides: Observable<Slide[]> = new Observable();
@@ -35,39 +35,33 @@ export class GalleryComponent implements OnInit {
         const totalSlides = slides.length;
         return slides.map((slide, index) =>({
           ...slide,
-          // zIndex: this.getZIndex(totalSlides, index, 0),
         }));
       })
     );
 
-    // this.slides.subscribe(slides => {
-    //   const slidesLenght = slides.length;
-    // });
     this.slides.subscribe(slides => {
-      this.lastIndex = slides.length - 1; // Declare lastIndex here
+      this.lastIndex = slides.length - 1;
     });
   }
 
-  // getZIndex(totalSlides: number, currentIndex: number, activeIndex: number) {
-  //   const currentIndexAdjusted = activeIndex ?? 0;
-  //   const difference = currentIndex - currentIndexAdjusted;
-  //   return totalSlides - Math.abs(difference) - 1;
-  // }
-
   showPrev(index: number) {
     this.slides.subscribe(slides => {
-      // const lastIndex = slides.length - 1;
       this.activeIndex = index > 0 ? index - 1 : this.lastIndex;
     });
   }
   showNext(index: number) {
-    this.slides.subscribe(slides => {
-      // const lastIndex = slides.length - 1;
-      this.activeIndex = index < this.lastIndex ? index + 1 : 0;
-    });
+    if(this.activeIndex === index) {
+      this.slides.subscribe(slides => {
+        this.activeIndex = index < this.lastIndex ? index + 1 : 0;
+      });
+    }
   }
   selectActiveSlide(index: number) {
     this.activeIndex = index;
+  }
+
+  ngOnDestroy(): void {
+    
   }
 
 }

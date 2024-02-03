@@ -8,7 +8,6 @@
             *ngFor="let item of slidesData; let isFirst = first; let isLast = last"
             [ngClass]="{
                 active: activeIndex === item.index,
-                invisible: !(item.index >= activeIndex && item.index < (activeIndex + maxVisibleSlides)),
                 }"
             (click)="clickSlide(item.index)"
             [style.width.px]="getSlideWidth()"

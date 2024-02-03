@@ -42,14 +42,12 @@ img {
     cursor: grab;
   }
   &.invisible {
-    opacity: 0;
-    position: absolute;
-    left: 0 !important;
-    pointer-events: none;
+    // opacity: 0;
+    // position: absolute;
+    // left: 0 !important;
+    // pointer-events: none;
+    display: none;
   }
-  // &.margin {
-  //   left: 0 !important;
-  // }
   span {
     color: white;
     font-size: 24px;
