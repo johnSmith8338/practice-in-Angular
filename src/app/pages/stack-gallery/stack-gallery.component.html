@@ -8,6 +8,7 @@
             *ngFor="let item of slidesData; let isFirst = first; let isLast = last"
             [ngClass]="{
                 active: activeIndex === item.index,
+                inactive: activeIndex !== item.index
                 }"
             (click)="clickSlide(item.index)"
             [style.width.px]="getSlideWidth()"
