@@ -38,3 +38,15 @@ swiper-slide {
     display: flex;
     align-items: center;
 }
+
+::ng-deep {
+    .owl-carousel.owl-drag .owl-item {
+        position: relative;
+        height: 320px;
+    }
+    .owl-carousel .owl-item img {
+        position: absolute;
+        height: 100%;
+        object-fit: cover;
+    }
+}

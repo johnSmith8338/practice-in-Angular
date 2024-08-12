@@ -1,0 +1,50 @@
+:host {
+  display: grid;
+  background: bisque;
+  color: black;
+  width: 100%;
+  height: 100vh;
+  place-items: center;
+  overflow: hidden;
+}
+
+img {
+  display: grid;
+  width: 100%;
+  height: 100%;
+}
+
+.slides {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  display: flex;
+  gap: 80px;
+
+  transform: translateX(0);
+  transition: transform 100ms;
+}
+
+.slide {
+  position: relative;
+  display: grid;
+  width: 340px;
+  height: 540px;
+  overflow: hidden;
+  border-radius: 20px;
+
+  img {
+    position: absolute;
+    inset: 0;
+    object-fit: cover;
+  }
+
+  p {
+    margin: 0;
+    padding: 20px;
+    align-self: start;
+    z-index: 1;
+    background: white;
+  }
+}

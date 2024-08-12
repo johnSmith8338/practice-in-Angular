@@ -1,4 +1,4 @@
-import { CUSTOM_ELEMENTS_SCHEMA ,NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { BrowserModule, HammerModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
@@ -26,6 +26,8 @@ import { CardStackService } from './pages/cards-stack/cards-stack.service';
 import { CatComponent } from './pages/cat/cat.component';
 import { StackGalleryComponent } from './pages/stack-gallery/stack-gallery.component';
 import { HttpClientModule } from '@angular/common/http';
+import { CarouselModule } from 'ngx-owl-carousel-o';
+import { KaroGalleryComponent } from './pages/karo-gallery/karo-gallery.component';
 // register Swiper custom elements
 register();
 
@@ -56,6 +58,8 @@ register();
     HttpClientModule,
     GalleryComponent,
     HammerModule,
+    CarouselModule,
+    KaroGalleryComponent,
   ],
   exports: [
     MatCardModule,

@@ -1,25 +1,32 @@
 {
     "slides": [
         {
-            "srcUrl": "https://preview.ibb.co/jrsA6R/img12.jpg"
+            "srcUrl": "https://preview.ibb.co/jrsA6R/img12.jpg",
+            "id": 1
         },
         {
-            "srcUrl": "https://preview.ibb.co/kPE1D6/clouds.jpg"
+            "srcUrl": "https://preview.ibb.co/kPE1D6/clouds.jpg",
+            "id": 2
         },
         {
-            "srcUrl": "https://preview.ibb.co/mwsA6R/img7.jpg"
+            "srcUrl": "https://preview.ibb.co/mwsA6R/img7.jpg",
+            "id": 3
         },
         {
-            "srcUrl": "https://preview.ibb.co/jrsA6R/img12.jpg"
+            "srcUrl": "https://preview.ibb.co/jrsA6R/img12.jpg",
+            "id": 4
         },
         {
-            "srcUrl": "https://preview.ibb.co/kPE1D6/clouds.jpg"
+            "srcUrl": "https://preview.ibb.co/kPE1D6/clouds.jpg",
+            "id": 5
         },
         {
-            "srcUrl": "https://preview.ibb.co/mwsA6R/img7.jpg"
+            "srcUrl": "https://preview.ibb.co/mwsA6R/img7.jpg",
+            "id": 6
         },
         {
-            "srcUrl": "https://preview.ibb.co/kPE1D6/clouds.jpg"
+            "srcUrl": "https://preview.ibb.co/kPE1D6/clouds.jpg",
+            "id": 7
         }
     ]
 }
