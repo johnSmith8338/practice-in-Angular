@@ -1,5 +1,4 @@
-<div class="slider-container" (mousedown)="onStart($event)" (mousemove)="onMove($event)" (mouseup)="onEnd()"
-    (mouseleave)="onMouseLeave()" (touchstart)="onStart($event)" (touchmove)="onMove($event)" (touchend)="onEnd()">
+<div class="slider-container" #sliderContainer>
     <ul class="slides">
         <li class="slide" *ngFor="let item of slides">
             <img [src]="item.srcUrl" alt="slide_img">
