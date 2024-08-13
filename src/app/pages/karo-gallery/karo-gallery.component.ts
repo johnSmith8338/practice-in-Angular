@@ -34,10 +34,11 @@ export class KaroGalleryComponent implements OnInit, AfterViewInit {
   // currentTranslate = 0;
   // isDragging = false;
   // sliderWidth = 340;
-  slideWidth = 340; // Ширина слайда
-  gap = 80; // Отступ между слайдами
-  radius = 0;
-  @ViewChild('sliderContainer', { static: true }) sliderContainer!: ElementRef;
+
+  // slideWidth = 340;
+  // gap = 80;
+  // radius = 0;
+  // @ViewChild('sliderContainer', { static: true }) sliderContainer!: ElementRef;
 
   getCards() {
     return this.http.get<CardsData>(this.cardsUrl);
@@ -59,40 +60,44 @@ export class KaroGalleryComponent implements OnInit, AfterViewInit {
     });
   }
   ngAfterViewInit(): void {
-    this.calculateRadius();
-    this.updateSlidesPosition();
-    this.initializeHammer();
+    // this.calculateRadius();
+    // this.updateSlidesPosition();
+    // this.initializeHammer();
   }
 
-  calculateRadius() {
-    const totalWidth = this.slides.length * (this.slideWidth + this.gap) - this.gap;
-    this.radius = totalWidth / (2 * Math.PI);
-  }
+  // calculateRadius() {
+  //   const totalWidth = this.slides.length * (this.slideWidth + this.gap) - this.gap;
+  //   this.radius = totalWidth / (2 * Math.PI);
+  // }
 
-  updateSlidesPosition() {
-    const angleStep = 360 / this.slides.length;
-    const slides = this.sliderContainer.nativeElement.querySelector('.slides') as HTMLElement;
+  // updateSlidesPosition() {
+  //   const angleStep = 360 / this.slides.length;
+  //   const slides = this.sliderContainer.nativeElement.querySelector('.slides') as HTMLElement;
 
-    if (slides) {
-      const offset = -this.currentIndex * (this.slideWidth + this.gap);
-      slides.style.transform = `translateX(${offset}px)`;
-    }
-  }
+  //   if (slides) {
+  //     const angle = -this.currentIndex * angleStep;
+  //     const transform = `rotate(${angle}deg) translateX(${this.radius}px) rotate(-${angle}deg)`;
+  //     slides.style.transform = transform;
+  //   }
+  // }
 
-  initializeHammer() {
-    const hammertime = new Hammer(this.sliderContainer.nativeElement);
-    hammertime.on('pan', (event) => {
-      this.handlePan(event);
-    });
-  }
+  // initializeHammer() {
+  //   const hammertime = new Hammer(this.sliderContainer.nativeElement);
+  //   hammertime.on('pan', (event) => {
+  //     this.handlePan(event);
+  //   });
+  // }
 
-  handlePan(event: HammerInput) {
-    const slides = this.sliderContainer.nativeElement.querySelector('.slides') as HTMLElement;
-    if (slides) {
-      const offset = -this.currentIndex * (this.slideWidth + this.gap) + event.deltaX;
-      slides.style.transform = `translateX(${offset}px)`;
-    }
-  }
+  // handlePan(event: HammerInput) {
+  //   const angleStep = 360 / this.slides.length;
+  //   const angle = -this.currentIndex * angleStep;
+  //   const transform = `rotate(${angle}deg) translateX(${this.radius + event.deltaX}px) rotate(-${angle}deg)`;
+
+  //   const slides = this.sliderContainer.nativeElement.querySelector('.slides') as HTMLElement;
+  //   if (slides) {
+  //     slides.style.transform = transform;
+  //   }
+  // }
 
   // prevSlide() {
   //   this.currentIndex = this.currentIndex > 0 ? this.currentIndex - 1 : this.slides.length - 1;
