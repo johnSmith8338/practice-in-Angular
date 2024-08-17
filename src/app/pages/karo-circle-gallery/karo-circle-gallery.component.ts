@@ -37,6 +37,7 @@ export class KaroCircleGalleryComponent implements OnInit {
   ngOnInit(): void {
     this.getCards().subscribe((data: { slides: Card[] }) => {
       this.slides = data.slides;
+      console.log(this.slides);
       this.cdr.markForCheck();
     });
   }
@@ -52,7 +53,7 @@ export class KaroCircleGalleryComponent implements OnInit {
     const totalSlides = this.slides.length;
     const arcAngle = 10; // Угол между слайдами
     const startAngle = -arcAngle * (totalSlides - 1) / 2; // Центрируем дугу
-    const angle = startAngle + (index * arcAngle); // Угол для каждого слайда
+    const angle = startAngle + ((index - this.currentIndex) * arcAngle); // Угол для каждого слайда
 
     const distance = 2400; // Расстояние между слайдами
     const translateX = distance * Math.sin(angle * (Math.PI / 180)); // Смещение по X
@@ -60,13 +61,24 @@ export class KaroCircleGalleryComponent implements OnInit {
     const additionalY = distance - 150; // Дополнительное смещение вниз
 
     return `translate(${translateX}px, ${translateY + additionalY}px) rotate(${angle}deg)`;
+
+    /*
+    простой круговой слайдер
+
+    const offset = (index - this.currentIndex) * this.slideWidth;
+    return `translateX(${offset}px)`;
+    */
   }
 
   nextSlide() {
     this.currentIndex = (this.currentIndex + 1) % this.slides.length;
+    this.cdr.detectChanges();
+    console.log('next');
   }
 
   previousSlide() {
     this.currentIndex = (this.currentIndex - 1 + this.slides.length) % this.slides.length;
+    this.cdr.detectChanges();
+    console.log('prev');
   }
 }

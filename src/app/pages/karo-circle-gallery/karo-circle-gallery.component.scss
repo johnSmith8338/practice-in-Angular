@@ -56,3 +56,17 @@ img {
     object-fit: cover;
   }
 }
+
+.prev,
+.next {
+  position: fixed;
+  bottom: 50px;
+}
+
+.prev {
+  left: 50px;
+}
+
+.next {
+  right: 50px;
+}
