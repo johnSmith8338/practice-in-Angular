@@ -28,6 +28,7 @@ import { StackGalleryComponent } from './pages/stack-gallery/stack-gallery.compo
 import { HttpClientModule } from '@angular/common/http';
 import { CarouselModule } from 'ngx-owl-carousel-o';
 import { KaroGalleryComponent } from './pages/karo-gallery/karo-gallery.component';
+import { KaroCircleGalleryComponent } from './pages/karo-circle-gallery/karo-circle-gallery.component';
 // register Swiper custom elements
 register();
 
@@ -60,6 +61,7 @@ register();
     HammerModule,
     CarouselModule,
     KaroGalleryComponent,
+    KaroCircleGalleryComponent,
   ],
   exports: [
     MatCardModule,
