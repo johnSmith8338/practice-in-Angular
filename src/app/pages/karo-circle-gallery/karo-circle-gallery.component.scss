@@ -34,11 +34,19 @@ img {
   transition: transform 0.5s ease, opacity 0.5s ease;
   opacity: 1;
 
+  &.active {
+    p {
+      opacity: 1;
+    }
+  }
+
   p {
     text-align: center;
     font-size: 20px;
     font-weight: 700;
     margin-top: 2em;
+    opacity: 0;
+    transition: 500ms;
   }
 }
 

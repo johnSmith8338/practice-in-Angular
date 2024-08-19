@@ -2,31 +2,38 @@
     "slides": [
         {
             "srcUrl": "https://preview.ibb.co/jrsA6R/img12.jpg",
-            "id": 1
+            "id": 1,
+            "title": "first slide"
         },
         {
             "srcUrl": "https://preview.ibb.co/kPE1D6/clouds.jpg",
-            "id": 2
+            "id": 2,
+            "title": "second slide"
         },
         {
             "srcUrl": "https://preview.ibb.co/mwsA6R/img7.jpg",
-            "id": 3
+            "id": 3,
+            "title": "third slide"
         },
         {
             "srcUrl": "https://preview.ibb.co/jrsA6R/img12.jpg",
-            "id": 4
+            "id": 4,
+            "title": "fourth slide"
         },
         {
             "srcUrl": "https://preview.ibb.co/kPE1D6/clouds.jpg",
-            "id": 5
+            "id": 5,
+            "title": "fives slide"
         },
         {
             "srcUrl": "https://preview.ibb.co/mwsA6R/img7.jpg",
-            "id": 6
+            "id": 6,
+            "title": "sixth slide"
         },
         {
             "srcUrl": "https://preview.ibb.co/kPE1D6/clouds.jpg",
-            "id": 7
+            "id": 7,
+            "title": "seventh slide"
         }
     ]
 }

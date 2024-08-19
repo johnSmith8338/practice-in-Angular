@@ -2,10 +2,19 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostListener, inject, OnInit, ViewChild } from '@angular/core';
+import { HAMMER_GESTURE_CONFIG, HammerGestureConfig } from '@angular/platform-browser';
+import * as Hammer from 'hammerjs'
+
+export class HammerConfig extends HammerGestureConfig {
+  override = {
+    swipe: { direction: Hammer.DIRECTION_ALL },
+  };
+}
 
 export interface Card {
   id: number;
   srcUrl: string;
+  title: string;
   isActive: boolean;
 }
 export interface CardsData {
@@ -18,13 +27,17 @@ export interface CardsData {
   imports: [
     CommonModule,
   ],
+  providers: [{
+    provide: HAMMER_GESTURE_CONFIG,
+    useClass: HammerConfig
+  }],
   templateUrl: './karo-circle-gallery.component.html',
   styleUrls: ['./karo-circle-gallery.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [
     trigger('slideVisibility', [
       state('visible', style({
-        opacity: 1
+        opacity: 1,
       })),
       state('hidden', style({
         opacity: 0
@@ -46,6 +59,10 @@ export class KaroCircleGalleryComponent implements OnInit {
   slideWidth = 340;
   visibleSlidesCount = 2;
 
+  trackById(index: number, item: Card) {
+    return item.id;
+  }
+
   getCards() {
     return this.http.get<CardsData>(this.cardsUrl);
   }
@@ -56,6 +73,10 @@ export class KaroCircleGalleryComponent implements OnInit {
       this.cdr.markForCheck();
       this.updateActiveSlide();
     });
+  }
+
+  onPan(event: Event) {
+    console.log("onPAN");
   }
 
   @HostListener('window:resize', ['$event'])
