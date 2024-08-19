@@ -1,7 +1,8 @@
 <div class="slider-container" #sliderContainer>
     <div class="slides">
         <div class="slide" *ngFor="let item of slides; let i = index" [style.width]="slideWidth+'px'"
-            [style.transform]="getSlideTransform(i)">
+            [@slideVisibility]="getSlideState(i)" [style.transform]="getSlideTransform(i)"
+            [class.active]="item.isActive">
             <div class="img-wrapper">
                 <img [src]="item.srcUrl" alt="slide_img">
             </div>

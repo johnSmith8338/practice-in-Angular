@@ -1,3 +1,4 @@
+import { animate, state, style, transition, trigger } from '@angular/animations';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostListener, inject, OnInit, ViewChild } from '@angular/core';
@@ -5,6 +6,7 @@ import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, E
 export interface Card {
   id: number;
   srcUrl: string;
+  isActive: boolean;
 }
 export interface CardsData {
   slides: Card[];
@@ -19,6 +21,19 @@ export interface CardsData {
   templateUrl: './karo-circle-gallery.component.html',
   styleUrls: ['./karo-circle-gallery.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  animations: [
+    trigger('slideVisibility', [
+      state('visible', style({
+        opacity: 1
+      })),
+      state('hidden', style({
+        opacity: 0
+      })),
+      transition('visible <=> hidden', [
+        animate('0.5s')
+      ])
+    ])
+  ]
 })
 export class KaroCircleGalleryComponent implements OnInit {
   cardsUrl = 'assets/slides.json';
@@ -29,6 +44,7 @@ export class KaroCircleGalleryComponent implements OnInit {
 
   @ViewChild('sliderContainer', { static: false }) sliderContainer!: ElementRef<HTMLDivElement>;
   slideWidth = 340;
+  visibleSlidesCount = 2;
 
   getCards() {
     return this.http.get<CardsData>(this.cardsUrl);
@@ -38,12 +54,13 @@ export class KaroCircleGalleryComponent implements OnInit {
     this.getCards().subscribe((data: { slides: Card[] }) => {
       this.slides = data.slides;
       this.cdr.markForCheck();
+      this.updateActiveSlide();
     });
   }
 
   @HostListener('window:resize', ['$event'])
   onResize(event: Event) {
-    console.log('resized');
+    console.log('resized', window.innerWidth);
   }
 
   currentIndex = 0;
@@ -51,7 +68,8 @@ export class KaroCircleGalleryComponent implements OnInit {
   getSlideTransform(index: number): string {
     const totalSlides = this.slides.length;
     const arcAngle = 10; // Угол между слайдами
-    const startAngle = -arcAngle * (totalSlides - 1) / 2; // Центрируем дугу
+    const middleIndex = Math.floor(totalSlides / 2);
+    const startAngle = -arcAngle * middleIndex; // Центрируем дугу
     const angle = startAngle + ((index - this.currentIndex + totalSlides) % totalSlides) * arcAngle; // Угол для каждого слайда
 
     const distance = 2400; // Расстояние между слайдами
@@ -71,11 +89,31 @@ export class KaroCircleGalleryComponent implements OnInit {
 
   nextSlide() {
     this.currentIndex = (this.currentIndex + 1) % this.slides.length;
+    this.updateActiveSlide();
     this.cdr.detectChanges();
   }
 
   previousSlide() {
     this.currentIndex = (this.currentIndex - 1 + this.slides.length) % this.slides.length;
+    this.updateActiveSlide();
     this.cdr.detectChanges();
+  }
+
+  updateActiveSlide() {
+    const totalSlides = this.slides.length;
+    const middleIndex = Math.floor(totalSlides / 2);
+
+    this.slides.forEach((slide, index) => {
+      slide.isActive = index === (this.currentIndex + middleIndex) % totalSlides;
+    });
+  }
+
+  getSlideState(index: number): string {
+    const totalSlides = this.slides.length;
+    const middleIndex = Math.floor(totalSlides / 2);
+    const lowerBound = (this.currentIndex + middleIndex - this.visibleSlidesCount + totalSlides) % totalSlides;
+    const upperBound = (this.currentIndex + middleIndex + this.visibleSlidesCount + totalSlides) % totalSlides;
+    const isVisible = (index >= lowerBound && index <= upperBound) || (lowerBound > upperBound && (index >= lowerBound || index <= upperBound));
+    return isVisible ? 'visible' : 'hidden';
   }
 }
