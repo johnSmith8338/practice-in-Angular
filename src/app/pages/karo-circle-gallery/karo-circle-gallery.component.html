@@ -1,9 +1,9 @@
 <div class="slider-container" (pan)="onPan($event)">
     <div class="slides">
         <div class="slide" *ngFor="let item of slides; let i = index; trackBy: trackById"
-            [style.width]="slideWidth+'px'" [@slideVisibility]="getSlideState(i)"
+            [style.width]="slideWidth()+'px'" [style.height]="slideHeight()+'px'" [@slideVisibility]="getSlideState(i)"
             [style.transform]="getSlideTransform(i)" [class.active]="item.isActive">
-            <div class="img-wrapper">
+            <div class="img-wrapper" [style.width]="slideWidth()+'px'" [style.height]="slideHeight()+'px'">
                 <img [src]="item.srcUrl" alt="slide_img">
             </div>
             <p>

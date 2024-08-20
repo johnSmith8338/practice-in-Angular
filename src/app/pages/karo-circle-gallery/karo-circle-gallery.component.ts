@@ -1,7 +1,7 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostListener, inject, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, computed, effect, ElementRef, HostListener, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { HAMMER_GESTURE_CONFIG, HammerGestureConfig } from '@angular/platform-browser';
 import * as Hammer from 'hammerjs'
 
@@ -53,10 +53,18 @@ export class KaroCircleGalleryComponent implements OnInit {
   http = inject(HttpClient);
   cdr = inject(ChangeDetectorRef);
 
+  screenWidth = signal(window.innerWidth);
+
   slides: Card[] = [];
 
   @ViewChild('sliderContainer', { static: false }) sliderContainer!: ElementRef<HTMLDivElement>;
-  slideWidth = 340;
+  slideWidth = computed(() => {
+    return this.screenWidth() < 1024 ? 142 : 340;
+  });
+  slideHeight = computed(() => {
+    return this.slideWidth() === 340 ? 540 : 226;
+  });
+  currentIndex = 0;
   visibleSlidesCount = 2;
 
   trackById(index: number, item: Card) {
@@ -67,24 +75,26 @@ export class KaroCircleGalleryComponent implements OnInit {
     return this.http.get<CardsData>(this.cardsUrl);
   }
 
+  constructor() {
+    effect(() => {
+      window.addEventListener('resize', () => {
+        this.screenWidth.set(window.innerWidth);
+      });
+    });
+  }
+
   ngOnInit(): void {
     this.getCards().subscribe((data: { slides: Card[] }) => {
       this.slides = data.slides;
       this.cdr.markForCheck();
       this.updateActiveSlide();
     });
+    console.log(this.screenWidth())
   }
 
   onPan(event: Event) {
     console.log("onPAN");
   }
-
-  @HostListener('window:resize', ['$event'])
-  onResize(event: Event) {
-    console.log('resized', window.innerWidth);
-  }
-
-  currentIndex = 0;
 
   getSlideTransform(index: number): string {
     const totalSlides = this.slides.length;
