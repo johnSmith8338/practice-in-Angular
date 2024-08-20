@@ -66,6 +66,10 @@ export class KaroCircleGalleryComponent implements OnInit {
   });
   currentIndex = 0;
   visibleSlidesCount = 2;
+  isDragging = false;
+  startX = 0;
+  currentTranslate = 0;
+  prevTranslate = 0;
 
   trackById(index: number, item: Card) {
     return item.id;
@@ -89,11 +93,62 @@ export class KaroCircleGalleryComponent implements OnInit {
       this.cdr.markForCheck();
       this.updateActiveSlide();
     });
-    console.log(this.screenWidth())
   }
 
   onPan(event: Event) {
     console.log("onPAN");
+  }
+
+  onDragStart(event: MouseEvent) {
+    this.isDragging = true;
+    this.startX = event.clientX;
+  }
+
+  onDrag(event: MouseEvent) {
+    if (!this.isDragging) return;
+    const currentX = event.clientX;
+    const deltaX = currentX - this.startX;
+    this.currentTranslate = this.prevTranslate + deltaX;
+    // Обновите положение слайдов
+    this.updateSlidePosition(deltaX);
+  }
+
+  onDragEnd(event: MouseEvent) {
+    this.isDragging = false;
+    this.prevTranslate = this.currentTranslate;
+    // Определите, нужно ли переключить слайд
+    if (this.currentTranslate > 100) {
+      this.previousSlide();
+    } else if (this.currentTranslate < -100) {
+      this.nextSlide();
+    }
+    this.currentTranslate = 0;
+    this.prevTranslate = 0;
+  }
+
+  // updateSlidePosition() {
+  //   const slides = document.querySelectorAll('.slide') as NodeListOf<HTMLElement>;
+  //   slides.forEach((slide, index) => {
+  //     this.getSlideTransform(index);
+  //   });
+  // }
+  updateSlidePosition(deltaX: number) {
+    const slides = document.querySelectorAll('.slide') as NodeListOf<HTMLElement>;
+    const slideWidth = this.slideWidth();
+    const threshold = slideWidth / 2; // Порог для смены слайда
+
+    if (deltaX > threshold) {
+      this.previousSlide();
+      this.startX += slideWidth; // Обновляем начальную позицию для следующего слайда
+    } else if (deltaX < -threshold) {
+      this.nextSlide();
+      this.startX -= slideWidth; // Обновляем начальную позицию для следующего слайда
+    }
+
+    slides.forEach((slide, index) => {
+      const transform = this.getSlideTransform(index);
+      slide.style.transform = transform;
+    });
   }
 
   getSlideTransform(index: number): string {
@@ -119,15 +174,29 @@ export class KaroCircleGalleryComponent implements OnInit {
   }
 
   nextSlide() {
-    this.currentIndex = (this.currentIndex + 1) % this.slides.length;
-    this.updateActiveSlide();
-    this.cdr.detectChanges();
+    // бесконечный слайдер
+    // this.currentIndex = (this.currentIndex + 1) % this.slides.length;
+    // this.updateActiveSlide();
+    // this.cdr.detectChanges();
+
+    if (this.currentIndex < this.slides.length - 1) {
+      this.currentIndex++;
+      this.updateActiveSlide();
+      this.cdr.detectChanges();
+    }
   }
 
   previousSlide() {
-    this.currentIndex = (this.currentIndex - 1 + this.slides.length) % this.slides.length;
-    this.updateActiveSlide();
-    this.cdr.detectChanges();
+    // бесконечный слайдер
+    // this.currentIndex = (this.currentIndex - 1 + this.slides.length) % this.slides.length;
+    // this.updateActiveSlide();
+    // this.cdr.detectChanges();
+
+    if (this.currentIndex > 0) {
+      this.currentIndex--;
+      this.updateActiveSlide();
+      this.cdr.detectChanges();
+    }
   }
 
   updateActiveSlide() {

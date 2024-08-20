@@ -1,8 +1,9 @@
-<div class="slider-container" (pan)="onPan($event)">
+<div class="slider-container" (mousedown)="onDragStart($event)" (mousemove)="onDrag($event)"
+    (mouseup)="onDragEnd($event)" (mouseleave)="onDragEnd($event)">
     <div class="slides">
         <div class="slide" *ngFor="let item of slides; let i = index; trackBy: trackById"
-            [style.width]="slideWidth()+'px'" [style.height]="slideHeight()+'px'" [@slideVisibility]="getSlideState(i)"
-            [style.transform]="getSlideTransform(i)" [class.active]="item.isActive">
+            [style.transform]="getSlideTransform(i)" [class.active]="item.isActive"
+            [class.visible]="getSlideState(i)==='visible'" [class.hidden]="getSlideState(i)==='hidden'">
             <div class="img-wrapper" [style.width]="slideWidth()+'px'" [style.height]="slideHeight()+'px'">
                 <img [src]="item.srcUrl" alt="slide_img">
             </div>
@@ -15,3 +16,5 @@
     <button (click)="previousSlide()" class="prev">Previous</button>
     <button (click)="nextSlide()" class="next">Next</button>
 </div>
+<!-- [style.width]="slideWidth()+'px'" [style.height]="slideHeight()+'px'" -->
+<!-- [@slideVisibility]="getSlideState(i)" -->

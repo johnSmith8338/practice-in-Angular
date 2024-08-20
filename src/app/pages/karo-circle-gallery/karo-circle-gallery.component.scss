@@ -2,6 +2,11 @@
   display: grid;
   place-items: center;
   grid-template-rows: 100vh;
+
+  --slide-width: 340px;
+  --slide-height: 540px;
+  --slide-width-mob: 142px;
+  --slide-height-mob: 226px;
 }
 
 img {
@@ -22,17 +27,26 @@ img {
 
 .slides {
   position: relative;
-  width: 340px;
-  height: 540px;
+  width: var(--slide-width);
+  height: var(--slide-height);
 }
 
 .slide {
   position: absolute;
-  width: 340px;
-  height: 540px;
+  width: var(--slide-width);
+  height: var(--slide-height);
   transform-origin: bottom center;
-  transition: transform 0.5s ease, opacity 0.5s ease;
-  opacity: 1;
+  transition: all 300ms ease;
+  opacity: 0;
+  user-select: none;
+
+  &.visible {
+    animation: fadeIn 300ms forwards;
+  }
+
+  &.hidden {
+    animation: fadeOut 300ms forwards;
+  }
 
   &.active {
     p {
@@ -77,4 +91,24 @@ img {
 
 .next {
   right: 50px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
 }
