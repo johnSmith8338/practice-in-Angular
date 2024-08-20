@@ -99,21 +99,21 @@ export class KaroCircleGalleryComponent implements OnInit {
     console.log("onPAN");
   }
 
-  onDragStart(event: MouseEvent) {
+  onDragStart(event: MouseEvent | TouchEvent) {
     this.isDragging = true;
-    this.startX = event.clientX;
+    this.startX = event instanceof MouseEvent ? event.clientX : event.touches[0].clientX;
   }
 
-  onDrag(event: MouseEvent) {
+  onDrag(event: MouseEvent | TouchEvent) {
     if (!this.isDragging) return;
-    const currentX = event.clientX;
+    const currentX = event instanceof MouseEvent ? event.clientX : event.touches[0].clientX;
     const deltaX = currentX - this.startX;
     this.currentTranslate = this.prevTranslate + deltaX;
     // Обновите положение слайдов
     this.updateSlidePosition(deltaX);
   }
 
-  onDragEnd(event: MouseEvent) {
+  onDragEnd(event: MouseEvent | TouchEvent) {
     this.isDragging = false;
     this.prevTranslate = this.currentTranslate;
     // Определите, нужно ли переключить слайд
@@ -158,7 +158,7 @@ export class KaroCircleGalleryComponent implements OnInit {
     const startAngle = -arcAngle * middleIndex; // Центрируем дугу
     const angle = startAngle + ((index - this.currentIndex + totalSlides) % totalSlides) * arcAngle; // Угол для каждого слайда
 
-    const distance = 2400; // Расстояние между слайдами
+    const distance = this.screenWidth() < 1024 ? 1000 : 2400; // Расстояние между слайдами
     const translateX = distance * Math.sin(angle * (Math.PI / 180)); // Смещение по X
     const translateY = -distance * Math.cos(angle * (Math.PI / 180)); // Смещение по Y
     const additionalY = distance - 150; // Дополнительное смещение вниз
@@ -175,28 +175,16 @@ export class KaroCircleGalleryComponent implements OnInit {
 
   nextSlide() {
     // бесконечный слайдер
-    // this.currentIndex = (this.currentIndex + 1) % this.slides.length;
-    // this.updateActiveSlide();
-    // this.cdr.detectChanges();
-
-    if (this.currentIndex < this.slides.length - 1) {
-      this.currentIndex++;
-      this.updateActiveSlide();
-      this.cdr.detectChanges();
-    }
+    this.currentIndex = (this.currentIndex + 1) % this.slides.length;
+    this.updateActiveSlide();
+    this.cdr.detectChanges();
   }
 
   previousSlide() {
     // бесконечный слайдер
-    // this.currentIndex = (this.currentIndex - 1 + this.slides.length) % this.slides.length;
-    // this.updateActiveSlide();
-    // this.cdr.detectChanges();
-
-    if (this.currentIndex > 0) {
-      this.currentIndex--;
-      this.updateActiveSlide();
-      this.cdr.detectChanges();
-    }
+    this.currentIndex = (this.currentIndex - 1 + this.slides.length) % this.slides.length;
+    this.updateActiveSlide();
+    this.cdr.detectChanges();
   }
 
   updateActiveSlide() {

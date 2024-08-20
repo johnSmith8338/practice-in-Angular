@@ -1,5 +1,6 @@
 <div class="slider-container" (mousedown)="onDragStart($event)" (mousemove)="onDrag($event)"
-    (mouseup)="onDragEnd($event)" (mouseleave)="onDragEnd($event)">
+    (mouseup)="onDragEnd($event)" (mouseleave)="onDragEnd($event)" (touchstart)="onDragStart($event)"
+    (touchmove)="onDrag($event)" (touchend)="onDragEnd($event)">
     <div class="slides">
         <div class="slide" *ngFor="let item of slides; let i = index; trackBy: trackById"
             [style.transform]="getSlideTransform(i)" [class.active]="item.isActive"

@@ -23,12 +23,19 @@ img {
   justify-content: center;
   align-items: center;
   overflow: hidden;
+  transition: all 300ms ease;
 }
 
 .slides {
   position: relative;
   width: var(--slide-width);
   height: var(--slide-height);
+  transition: all 300ms ease;
+
+  @media screen and (max-width: 1024px) {
+    width: var(--slide-width-mob);
+    height: var(--slide-height-mob);
+  }
 }
 
 .slide {
@@ -40,12 +47,17 @@ img {
   opacity: 0;
   user-select: none;
 
+  @media screen and (max-width: 1024px) {
+    width: var(--slide-width-mob);
+    height: var(--slide-height-mob);
+  }
+
   &.visible {
-    animation: fadeIn 300ms forwards;
+    animation: fadeIn 200ms forwards;
   }
 
   &.hidden {
-    animation: fadeOut 300ms forwards;
+    animation: fadeOut 200ms forwards;
   }
 
   &.active {
@@ -65,11 +77,16 @@ img {
 }
 
 .img-wrapper {
-  width: 340px;
-  height: 540px;
+  width: var(--slide-width);
+  height: var(--slide-height);
   border-radius: 20px;
   overflow: hidden;
   position: relative;
+
+  @media screen and (max-width: 1024px) {
+    width: var(--slide-width-mob);
+    height: var(--slide-height-mob);
+  }
 
   img {
     position: absolute;
