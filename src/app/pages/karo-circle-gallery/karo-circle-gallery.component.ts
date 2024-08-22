@@ -144,6 +144,8 @@ export class KaroCircleGalleryComponent implements OnInit {
       const transform = this.getSlideTransform(index);
       slide.style.transform = transform;
     });
+    const slide = document.querySelector('.slides') as HTMLElement;
+    slide.style.setProperty('--current-translate', `${this.currentTranslate}px`);
   }
 
   getSlideTransform(index: number): string {
