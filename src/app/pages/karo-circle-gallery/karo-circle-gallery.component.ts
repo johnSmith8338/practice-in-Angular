@@ -16,6 +16,7 @@ export interface Card {
   srcUrl: string;
   title: string;
   isActive: boolean;
+  isVisible: boolean;
 }
 export interface CardsData {
   slides: Card[];
@@ -102,6 +103,7 @@ export class KaroCircleGalleryComponent implements OnInit {
   onDragStart(event: MouseEvent | TouchEvent) {
     this.isDragging = true;
     this.startX = event instanceof MouseEvent ? event.clientX : event.touches[0].clientX;
+    event.preventDefault();
   }
 
   onDrag(event: MouseEvent | TouchEvent) {
@@ -115,36 +117,29 @@ export class KaroCircleGalleryComponent implements OnInit {
 
   onDragEnd(event: MouseEvent | TouchEvent) {
     this.isDragging = false;
-    this.prevTranslate = this.currentTranslate;
-    // Определите, нужно ли переключить слайд
-    if (this.currentTranslate > 100) {
+    const threshold = 100;
+    if (this.currentTranslate > threshold) {
       this.previousSlide();
-    } else if (this.currentTranslate < -100) {
+    } else if (this.currentTranslate < -threshold) {
       this.nextSlide();
+    } else {
+      this.resetSlidePosition();
     }
     this.currentTranslate = 0;
     this.prevTranslate = 0;
   }
 
-  // updateSlidePosition() {
-  //   const slides = document.querySelectorAll('.slide') as NodeListOf<HTMLElement>;
-  //   slides.forEach((slide, index) => {
-  //     this.getSlideTransform(index);
-  //   });
-  // }
+  resetSlidePosition() {
+    const slides = document.querySelectorAll('.slide') as NodeListOf<HTMLElement>;
+    slides.forEach((slide, index) => {
+      const transform = this.getSlideTransform(index);
+      slide.style.transition = 'transform 0.5s ease';
+      slide.style.transform = transform;
+    });
+  }
+
   updateSlidePosition(deltaX: number) {
     const slides = document.querySelectorAll('.slide') as NodeListOf<HTMLElement>;
-    const slideWidth = this.slideWidth();
-    const threshold = slideWidth / 2; // Порог для смены слайда
-
-    if (deltaX > threshold) {
-      this.previousSlide();
-      this.startX += slideWidth; // Обновляем начальную позицию для следующего слайда
-    } else if (deltaX < -threshold) {
-      this.nextSlide();
-      this.startX -= slideWidth; // Обновляем начальную позицию для следующего слайда
-    }
-
     slides.forEach((slide, index) => {
       const transform = this.getSlideTransform(index);
       slide.style.transform = transform;
@@ -177,14 +172,14 @@ export class KaroCircleGalleryComponent implements OnInit {
     // бесконечный слайдер
     this.currentIndex = (this.currentIndex + 1) % this.slides.length;
     this.updateActiveSlide();
-    this.cdr.detectChanges();
+    this.cdr.markForCheck();
   }
 
   previousSlide() {
     // бесконечный слайдер
     this.currentIndex = (this.currentIndex - 1 + this.slides.length) % this.slides.length;
     this.updateActiveSlide();
-    this.cdr.detectChanges();
+    this.cdr.markForCheck();
   }
 
   updateActiveSlide() {
@@ -193,6 +188,7 @@ export class KaroCircleGalleryComponent implements OnInit {
 
     this.slides.forEach((slide, index) => {
       slide.isActive = index === (this.currentIndex + middleIndex) % totalSlides;
+      slide.isVisible = this.getSlideState(index) === 'visible';
     });
   }
 
@@ -201,6 +197,7 @@ export class KaroCircleGalleryComponent implements OnInit {
     const middleIndex = Math.floor(totalSlides / 2);
     const lowerBound = (this.currentIndex + middleIndex - this.visibleSlidesCount + totalSlides) % totalSlides;
     const upperBound = (this.currentIndex + middleIndex + this.visibleSlidesCount + totalSlides) % totalSlides;
+
     const isVisible = (index >= lowerBound && index <= upperBound) || (lowerBound > upperBound && (index >= lowerBound || index <= upperBound));
     return isVisible ? 'visible' : 'hidden';
   }
