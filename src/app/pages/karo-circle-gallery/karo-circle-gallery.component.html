@@ -1,16 +1,17 @@
 <div class="slider-container" (mousedown)="onDragStart($event)" (mousemove)="onDrag($event)"
-    (mouseup)="onDragEnd($event)" (mouseleave)="onDragEnd($event)" (touchstart)="onDragStart($event)"
-    (touchmove)="onDrag($event)" (touchend)="onDragEnd($event)">
+    (mouseup)="onDragEnd($event)" (touchstart)="onDragStart($event)" (touchmove)="onDrag($event)"
+    (touchend)="onDragEnd($event)" #sliderContainer>
     <div class="slides">
         <div class="slide" *ngFor="let item of slides; let i = index; trackBy: trackById"
-            [style.transform]="getSlideTransform(i)" [class.active]="item.isActive"
-            [class.visible]="getSlideState(i)==='visible'" [class.hidden]="getSlideState(i)==='hidden'">
-            <div class="img-wrapper" [style.width]="slideWidth()+'px'" [style.height]="slideHeight()+'px'">
+            [style.transform]="getSlideTransform(i,deltaIndex())" [class.active]="item.isActive"
+            (click)="toggleOpen(i)">
+            <div class="img-wrapper">
                 <img [src]="item.srcUrl" alt="slide_img">
             </div>
             <p>
-                <span style="color:red">{{item.id}} </span>
-                <span>{{item.title}}</span>
+                <span style="color:red">{{item.uniqueId}} </span>
+                <span>{{item.title}} </span>
+                <span style="color:green">id:{{item.id}} </span>
             </p>
         </div>
     </div>
@@ -19,3 +20,4 @@
 </div>
 <!-- [style.width]="slideWidth()+'px'" [style.height]="slideHeight()+'px'" -->
 <!-- [@slideVisibility]="getSlideState(i)" -->
+<!-- [class.visible]="getSlideState(i)==='visible'" -->

@@ -43,9 +43,11 @@ img {
   width: var(--slide-width);
   height: var(--slide-height);
   transform-origin: bottom center;
-  transition: all 300ms ease;
-  opacity: 0;
+  transition: 300ms ease;
+  opacity: 1;
   user-select: none;
+  top: 0;
+  left: 0;
 
   @media screen and (max-width: 1024px) {
     width: var(--slide-width-mob);
@@ -63,6 +65,18 @@ img {
   &.active {
     p {
       opacity: 1;
+    }
+  }
+
+  &.opened {
+    z-index: 1;
+
+    p {
+      opacity: 0;
+    }
+
+    .img-wrapper {
+      border-radius: 0;
     }
   }
 
