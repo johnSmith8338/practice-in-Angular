@@ -111,7 +111,7 @@ export class KaroCircleGalleryComponent implements OnInit {
       // console.log(delta);
       this.slides.forEach((_, index) => {
         const slideElement = document.querySelector(`.slide:nth-child(${index + 1})`) as HTMLElement;
-        slideElement.style.transform = this.getSlideTransform(index, delta);
+        slideElement.style.transform = this.getSlideTransform(index);
       });
     });
   }
@@ -129,7 +129,6 @@ export class KaroCircleGalleryComponent implements OnInit {
 
       if (visibleSlides > this.slides.length) {
         console.log('Количество видимых слайдов больше, чем количество слайдов в массиве.');
-        // Дополнительная логика, если необходимо
       } else {
         console.log('Количество видимых слайдов меньше или равно количеству слайдов в массиве.');
         this.slides = [...this.slides, ...this.slides.map((slide, index) => ({ ...slide, uniqueId: index + this.originalSlidesLength }))];
@@ -176,7 +175,7 @@ export class KaroCircleGalleryComponent implements OnInit {
 
     // Обновляем indexCenter и сбрасываем deltaX
     const newIndexCenter = (this.indexCenter() + deltaIndexValue + this.slides.length) % this.slides.length;
-    this.indexCenter.set(newIndexCenter);
+    this.indexCenter.set(Math.floor(newIndexCenter));
     this.deltaX.set(0);
     this.updateActiveSlide();
     this.cdr.markForCheck();
@@ -185,7 +184,7 @@ export class KaroCircleGalleryComponent implements OnInit {
   resetSlidePosition() {
     const slides = document.querySelectorAll('.slide') as NodeListOf<HTMLElement>;
     slides.forEach((slide, index) => {
-      const transform = this.getSlideTransform(index, this.deltaIndex());
+      const transform = this.getSlideTransform(index);
       slide.style.transform = transform;
     });
   }
@@ -193,16 +192,17 @@ export class KaroCircleGalleryComponent implements OnInit {
   updateSlidePosition() {
     this.slides.forEach((_, index) => {
       const slideElement = document.querySelector(`.slide:nth-child(${index + 1})`) as HTMLElement;
-      slideElement.style.transform = this.getSlideTransform(index, this.deltaIndex());
+      slideElement.style.transform = this.getSlideTransform(index);
     });
+
     // const slide = document.querySelector('.slides') as HTMLElement;
     // slide.style.setProperty('--current-translate', `${this.currentTranslate}px`);
   }
 
-  getSlideTransform(index: number, deltaIndex: number): string {
+  getSlideTransform(index: number): string {
     const totalSlides = this.slides.length;
     const arcAngle = 10; // Угол между слайдами
-    const angle = arcAngle * (index - this.indexCenter() + deltaIndex); // Угол для каждого слайда
+    const angle = arcAngle * (index - this.indexCenter() + this.deltaIndex()); // Угол для каждого слайда
 
     console.log()
     const distance = this.screenWidth() < 1024 ? 1000 : 2400; // Расстояние между слайдами
@@ -242,7 +242,7 @@ export class KaroCircleGalleryComponent implements OnInit {
   updateActiveSlide() {
     this.slides.forEach((slide, index) => {
       slide.isActive = index === this.indexCenter();
-      console.log('indexCenter: ', this.indexCenter())
+      console.log('indexCenter: ', this.indexCenter());
       slide.isVisible = this.getSlideState(index) === 'visible';
     });
   }
