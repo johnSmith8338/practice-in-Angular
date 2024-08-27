@@ -73,9 +73,10 @@ export class KaroCircleGalleryComponent implements OnInit {
   deltaX = signal(0);
   deltaIndex = computed(() => {
     const maxSlides = this.visibleSlidesCount() * 2 + 1;
-    const indexDelta = this.deltaX() / (this.screenWidth() / maxSlides);
+    const indexDelta = this.deltaX() / (this.screenWidth() / maxSlides) * -1;
     if (Math.abs(indexDelta) > maxSlides) {
-      return indexDelta > 0 ? maxSlides : maxSlides * -1;
+      console.log('>>>')
+      return indexDelta > 0 ? maxSlides * -1 : maxSlides;
     }
     return indexDelta;
   });
@@ -118,27 +119,37 @@ export class KaroCircleGalleryComponent implements OnInit {
 
   ngOnInit(): void {
     this.getCards().subscribe((data: { slides: Card[] }) => {
-      this.slides = data.slides.map((slide, index) => ({ ...slide, uniqueId: index }));
-      this.originalSlidesLength = this.slides.length;
-      this.cdr.markForCheck();
+      // Инициализируем оригинальный массив слайдов
+      const originalSlides = data.slides.map((slide, index) => ({
+        ...slide,
+        uniqueId: index,
+      }));
+      this.originalSlidesLength = originalSlides.length;
+
+      // Создаем две дополнительные копии слайдов с уникальными идентификаторами
+      const clonedSlides1 = originalSlides.map((slide, index) => ({
+        ...slide,
+        uniqueId: index + this.originalSlidesLength,
+      }));
+
+      const clonedSlides2 = originalSlides.map((slide, index) => ({
+        ...slide,
+        uniqueId: index + this.originalSlidesLength * 2,
+      }));
+
+      // Объединяем все слайды в один массив
+      this.slides = [...originalSlides, ...clonedSlides1, ...clonedSlides2];
+
+      // Устанавливаем indexCenter на середину общего массива
+      this.indexCenter.set(this.originalSlidesLength);
+
+      // Обновляем отображение
+      this.updateSlidePosition();
       this.updateActiveSlide();
-      this.resetSlidePosition();
-
-      // Проверка количества видимых слайдов
-      const visibleSlides = this.visibleSlidesCount() * 2 + 1;
-
-      if (visibleSlides > this.slides.length) {
-        console.log('Количество видимых слайдов больше, чем количество слайдов в массиве.');
-      } else {
-        console.log('Количество видимых слайдов меньше или равно количеству слайдов в массиве.');
-        this.slides = [...this.slides, ...this.slides.map((slide, index) => ({ ...slide, uniqueId: index + this.originalSlidesLength }))];
-        this.indexCenter.set(Math.floor(this.originalSlidesLength));
-        this.cdr.markForCheck();
-        this.updateActiveSlide();
-        this.resetSlidePosition();
-      }
+      this.cdr.markForCheck();
     });
   }
+
 
   onPan(event: Event) {
     console.log("onPAN");
@@ -152,30 +163,32 @@ export class KaroCircleGalleryComponent implements OnInit {
 
   onDrag(event: MouseEvent | TouchEvent) {
     if (!this.isDragging) return;
+
     const currentX = event instanceof MouseEvent ? event.clientX : event.touches[0].clientX;
     const deltaX = currentX - this.startX;
     this.deltaX.set(deltaX);
-    console.log('deltaX: ', deltaX)
-    // Обновите положение слайдов
+
+    console.log('deltaX:', deltaX);
+
+    // Положение слайдов обновляется при каждом изменении deltaX
     this.updateSlidePosition();
   }
 
   onDragEnd(event: MouseEvent | TouchEvent) {
     this.isDragging = false;
-    const threshold = 100;
-    const deltaIndexValue = this.deltaIndex();
 
-    if (deltaIndexValue > threshold) {
-      this.previousSlide();
-    } else if (deltaIndexValue < -threshold) {
-      this.nextSlide();
+    // Если deltaX больше порогового значения в правую сторону
+    if (this.deltaX() > 50) {
+      this.nextSlide(); // Увеличиваем indexCenter
+    }
+    // Если deltaX больше порогового значения в левую сторону
+    else if (this.deltaX() < -50) {
+      this.previousSlide(); // Уменьшаем indexCenter
     } else {
-      this.resetSlidePosition();
+      this.resetSlidePosition(); // Возвращаем на место
     }
 
-    // Обновляем indexCenter и сбрасываем deltaX
-    const newIndexCenter = (this.indexCenter() + deltaIndexValue + this.slides.length) % this.slides.length;
-    this.indexCenter.set(Math.floor(newIndexCenter));
+    // Сбрасываем deltaX и обновляем слайдер
     this.deltaX.set(0);
     this.updateActiveSlide();
     this.cdr.markForCheck();
@@ -189,10 +202,13 @@ export class KaroCircleGalleryComponent implements OnInit {
     });
   }
 
-  updateSlidePosition() {
-    this.slides.forEach((_, index) => {
-      const slideElement = document.querySelector(`.slide:nth-child(${index + 1})`) as HTMLElement;
-      slideElement.style.transform = this.getSlideTransform(index);
+  updateSlidePosition(noTransition = false) {
+    this.slides.forEach((slide, index) => {
+      const slideElement = document.querySelector(`.slide[data-unique-id="${slide.uniqueId}"]`) as HTMLElement;
+      if (slideElement) {
+        slideElement.style.transform = this.getSlideTransform(index);
+        slideElement.style.transition = noTransition ? 'none' : 'transform 0.5s ease';
+      }
     });
 
     // const slide = document.querySelector('.slides') as HTMLElement;
@@ -201,10 +217,11 @@ export class KaroCircleGalleryComponent implements OnInit {
 
   getSlideTransform(index: number): string {
     const totalSlides = this.slides.length;
-    const arcAngle = 10; // Угол между слайдами
-    const angle = arcAngle * (index - this.indexCenter() + this.deltaIndex()); // Угол для каждого слайда
+    const relativeIndex = (index - this.indexCenter() + totalSlides) % totalSlides; // Относительный индекс слайда
 
-    console.log()
+    const arcAngle = 10; // Угол между слайдами
+    let angle = arcAngle * (relativeIndex - Math.floor(totalSlides / 2)); // Угол с учетом положения относительно центра
+
     const distance = this.screenWidth() < 1024 ? 1000 : 2400; // Расстояние между слайдами
     const translateX = distance * Math.sin(angle * (Math.PI / 180)); // Смещение по X
     const translateY = -distance * Math.cos(angle * (Math.PI / 180)); // Смещение по Y
@@ -214,8 +231,6 @@ export class KaroCircleGalleryComponent implements OnInit {
   }
 
   nextSlide() {
-    console.log(this.slides.length <= this.visibleSlidesCount())
-    console.log(this.slides.length, this.visibleSlidesCount())
     if (this.slides.length <= this.visibleSlidesCount() * 2 + 1) {
       if (this.indexCenter() < this.slides.length - 1) {
         this.indexCenter.update(value => value + 1);
@@ -224,7 +239,7 @@ export class KaroCircleGalleryComponent implements OnInit {
       this.indexCenter.update(value => (value + 1) % this.slides.length);
     }
     this.updateActiveSlide();
-    this.cdr.markForCheck();
+    // this.cdr.markForCheck();
   }
 
   previousSlide() {
@@ -236,13 +251,21 @@ export class KaroCircleGalleryComponent implements OnInit {
       this.indexCenter.update(value => (value - 1 + this.slides.length) % this.slides.length);
     }
     this.updateActiveSlide();
-    this.cdr.markForCheck();
+    // this.cdr.markForCheck();
   }
 
   updateActiveSlide() {
+    const centerIndexInOriginal = this.indexCenter() % this.originalSlidesLength;
+
     this.slides.forEach((slide, index) => {
-      slide.isActive = index === this.indexCenter();
-      console.log('indexCenter: ', this.indexCenter());
+      // Устанавливаем класс .active только для слайда, соответствующего centerIndexInOriginal
+      slide.isActive = (index % this.originalSlidesLength) === centerIndexInOriginal;
+
+      // Логируем для отладки
+      console.log('slide id:', slide.id);
+      console.log('indexCenter:', this.indexCenter());
+
+      // Определяем видимость слайда
       slide.isVisible = this.getSlideState(index) === 'visible';
     });
   }
