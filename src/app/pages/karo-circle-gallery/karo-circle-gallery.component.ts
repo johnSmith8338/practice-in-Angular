@@ -51,7 +51,7 @@ export interface CardsData {
     ])
   ]
 })
-export class KaroCircleGalleryComponent implements OnInit {
+export class KaroCircleGalleryComponent implements OnInit, AfterViewInit {
   cardsUrl = 'assets/slides.json';
   http = inject(HttpClient);
   cdr = inject(ChangeDetectorRef);
@@ -75,8 +75,7 @@ export class KaroCircleGalleryComponent implements OnInit {
     const maxSlides = this.visibleSlidesCount() * 2 + 1;
     const indexDelta = this.deltaX() / (this.screenWidth() / maxSlides) * -1;
     if (Math.abs(indexDelta) > maxSlides) {
-      console.log('>>>')
-      return indexDelta > 0 ? maxSlides * -1 : maxSlides;
+      return indexDelta > 0 ? maxSlides : maxSlides * -1;
     }
     return indexDelta;
   });
@@ -104,15 +103,18 @@ export class KaroCircleGalleryComponent implements OnInit {
   }
 
   constructor() {
+    this.deltaX();
+    console.log('deltaX: ', this.deltaX())
     window.addEventListener('resize', () => {
       this.screenWidth.set(window.innerWidth);
     });
     effect(() => {
-      const delta = this.deltaIndex();
-      // console.log(delta);
+      const delta = Math.round(this.deltaIndex());
+      console.log('deltaIndex: ', delta);
       this.slides.forEach((_, index) => {
+        console.log('in effect');
         const slideElement = document.querySelector(`.slide:nth-child(${index + 1})`) as HTMLElement;
-        slideElement.style.transform = this.getSlideTransform(index, this.deltaX());
+        slideElement.style.transform = this.getSlideTransform(index, this.deltaX()); // Устанавливаем transform
       });
     });
   }
@@ -132,13 +134,8 @@ export class KaroCircleGalleryComponent implements OnInit {
         uniqueId: index + this.originalSlidesLength,
       }));
 
-      const clonedSlides2 = originalSlides.map((slide, index) => ({
-        ...slide,
-        uniqueId: index + this.originalSlidesLength * 2,
-      }));
-
       // Объединяем все слайды в один массив
-      this.slides = [...clonedSlides1, ...originalSlides, ...clonedSlides2];
+      this.slides = [...clonedSlides1, ...originalSlides];
 
       // Устанавливаем indexCenter на середину общего массива
       this.indexCenter.set(0);
@@ -150,6 +147,9 @@ export class KaroCircleGalleryComponent implements OnInit {
     });
   }
 
+  ngAfterViewInit(): void {
+    this.updateSlidePosition();
+  }
 
   onPan(event: Event) {
     console.log("onPAN");
@@ -217,20 +217,28 @@ export class KaroCircleGalleryComponent implements OnInit {
   updateSlidePosition(noTransition = false) {
     const slides = document.querySelectorAll('.slide') as NodeListOf<HTMLElement>;
 
-    const arcAngle = 10; // Угол между слайдами
-    const distance = 2400; // Радиус (расстояние до центра вращения)
+    const arcAngle = 12; // Угол между слайдами
+    const distance = 2600; // Радиус (расстояние до центра вращения)
+
+    // Ограничиваем значение deltaX
+    const maxDelta = this.screenWidth(); // Пример: макс. deltaX равен ширине экрана
+    const correctedDeltaX = Math.min(Math.max(this.deltaX(), -maxDelta), maxDelta);
 
     slides.forEach((slide, index) => {
       const relativeIndex = (index - this.indexCenter() + this.slides.length) % this.slides.length;
 
-      // Вычисляем угол для текущего слайда с учетом deltaX
-      const angle = arcAngle * (relativeIndex - Math.floor(this.slides.length / 2)) + this.deltaX() / 10;
-      const translateX = distance * Math.cos(angle * (Math.PI / 180));
-      const translateY = distance * Math.sin(angle * (Math.PI / 180));
+      // Вычисляем угол для текущего слайда с учетом ограниченного deltaX
+      const angle = arcAngle * (relativeIndex - Math.floor(this.slides.length / 2)) + correctedDeltaX / 10;
 
-      // Устанавливаем позицию слайда
-      slide.style.transform = `translate(${translateX}px, ${translateY}px) rotate(${angle}deg)`;
+      const isVisible = this.getSlideState(index);
+
+      // Устанавливаем постоянный радиус через transform-origin и вращаем слайды вниз
+      slide.style.transformOrigin = `center ${distance}px`; // Смещение вниз на расстояние `distance`
+      slide.style.transform = `rotate(${angle}deg)`;
+
+      // Добавляем плавность анимации
       slide.style.transition = noTransition ? 'none' : 'transform 0.5s ease';
+      slide.style.opacity = isVisible ? '1' : '0';
     });
   }
 
@@ -238,18 +246,16 @@ export class KaroCircleGalleryComponent implements OnInit {
     const totalSlides = this.slides.length;
     const relativeIndex = (index - this.indexCenter() + totalSlides) % totalSlides; // Относительный индекс слайда
 
-    const arcAngle = 10; // Угол между слайдами
+    const arcAngle = 12; // Угол между слайдами
     let angle = arcAngle * (relativeIndex - Math.floor(totalSlides / 2)); // Угол с учетом положения относительно центра
 
     // Применяем deltaX к углу
     angle -= deltaX / 10; // Корректировка угла на основе deltaX
 
-    const distance = this.screenWidth() < 1024 ? 1000 : 2400; // Расстояние между слайдами
-    const translateX = distance * Math.sin(angle * (Math.PI / 180)); // Смещение по X
-    const translateY = -distance * Math.cos(angle * (Math.PI / 180)); // Смещение по Y
-    const additionalY = distance - 150; // Дополнительное смещение вниз
-
-    return `translate(${translateX}px, ${translateY + additionalY}px) rotate(${angle}deg)`;
+    const radius = this.screenWidth() < 1024 ? 1000 : 2600; // Радиус вращения
+    const slideElement = document.querySelector(`.slide:nth-child(${index + 1})`) as HTMLElement;
+    slideElement.style.transformOrigin = `center ${radius}px`; // Устанавливаем transform-origin
+    return `rotate(${angle}deg)`;
   }
 
   nextSlide() {
@@ -284,23 +290,21 @@ export class KaroCircleGalleryComponent implements OnInit {
       // Устанавливаем класс .active только для слайда, соответствующего centerIndexInOriginal
       slide.isActive = (index % this.originalSlidesLength) === centerIndexInOriginal;
 
-      // Логируем для отладки
-      console.log('slide id:', slide.id);
+      // console.log('slide id:', slide.id);
       console.log('indexCenter:', this.indexCenter());
-
-      // Определяем видимость слайда
-      slide.isVisible = this.getSlideState(index) === 'visible';
     });
   }
 
-  getSlideState(index: number): string {
+  getSlideState(index: number): boolean {
     const totalSlides = this.slides.length;
-    const middleIndex = Math.floor(this.originalSlidesLength / 2);
-    const lowerBound = (this.indexCenter() + middleIndex - this.visibleSlidesCount() + totalSlides) % totalSlides;
-    const upperBound = (this.indexCenter() + middleIndex + this.visibleSlidesCount() + totalSlides) % totalSlides;
 
-    const isVisible = (index >= lowerBound && index <= upperBound) || (lowerBound > upperBound && (index >= lowerBound || index <= upperBound));
-    return isVisible ? 'visible' : 'hidden';
+    // Проверяем, находится ли слайд в начале или в конце списка
+    const isAtStart = index === 0 && this.indexCenter() === totalSlides - 1;
+    const isAtEnd = index === totalSlides - 1 && this.indexCenter() === 0;
+
+    // Скрываем слайды, которые перемещаются с конца в начало и наоборот
+    const isVisible = !isAtStart && !isAtEnd;
+    return isVisible;
   }
 
   toggleOpen(index: number): void {
