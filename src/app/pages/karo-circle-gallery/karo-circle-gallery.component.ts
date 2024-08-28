@@ -112,7 +112,7 @@ export class KaroCircleGalleryComponent implements OnInit {
       // console.log(delta);
       this.slides.forEach((_, index) => {
         const slideElement = document.querySelector(`.slide:nth-child(${index + 1})`) as HTMLElement;
-        slideElement.style.transform = this.getSlideTransform(index);
+        slideElement.style.transform = this.getSlideTransform(index, this.deltaX());
       });
     });
   }
@@ -138,10 +138,10 @@ export class KaroCircleGalleryComponent implements OnInit {
       }));
 
       // Объединяем все слайды в один массив
-      this.slides = [...originalSlides, ...clonedSlides1, ...clonedSlides2];
+      this.slides = [...clonedSlides1, ...originalSlides, ...clonedSlides2];
 
       // Устанавливаем indexCenter на середину общего массива
-      this.indexCenter.set(this.originalSlidesLength);
+      this.indexCenter.set(0);
 
       // Обновляем отображение
       this.updateSlidePosition();
@@ -170,57 +170,79 @@ export class KaroCircleGalleryComponent implements OnInit {
 
     console.log('deltaX:', deltaX);
 
-    // Положение слайдов обновляется при каждом изменении deltaX
+    // Обновляем положение слайдов при изменении deltaX
     this.updateSlidePosition();
   }
 
   onDragEnd(event: MouseEvent | TouchEvent) {
     this.isDragging = false;
 
-    // Если deltaX больше порогового значения в правую сторону
-    if (this.deltaX() > 50) {
-      this.nextSlide(); // Увеличиваем indexCenter
-    }
-    // Если deltaX больше порогового значения в левую сторону
-    else if (this.deltaX() < -50) {
-      this.previousSlide(); // Уменьшаем indexCenter
-    } else {
-      this.resetSlidePosition(); // Возвращаем на место
-    }
+    // Вычисляем новый индекс центра
+    this.calculateIndexCenter();
 
     // Сбрасываем deltaX и обновляем слайдер
     this.deltaX.set(0);
+    this.updateSlidePosition();
     this.updateActiveSlide();
     this.cdr.markForCheck();
   }
 
+
+  calculateIndexCenter(): void {
+    const maxSlides = this.visibleSlidesCount() * 2 + 1;
+    const slideWidth = this.screenWidth() / maxSlides;
+    const indexDelta = Math.round(this.deltaX() / slideWidth); // Округляем до ближайшего целого
+
+    let newIndexCenter = this.indexCenter() + indexDelta;
+
+    // Убедимся, что индекс не выходит за пределы
+    if (newIndexCenter < 0) {
+      newIndexCenter = this.slides.length - 1;
+    } else if (newIndexCenter >= this.slides.length) {
+      newIndexCenter = 0;
+    }
+
+    this.indexCenter.set(newIndexCenter);
+  }
+
+
   resetSlidePosition() {
     const slides = document.querySelectorAll('.slide') as NodeListOf<HTMLElement>;
     slides.forEach((slide, index) => {
-      const transform = this.getSlideTransform(index);
+      const transform = this.getSlideTransform(index, this.deltaX());
       slide.style.transform = transform;
     });
   }
 
   updateSlidePosition(noTransition = false) {
-    this.slides.forEach((slide, index) => {
-      const slideElement = document.querySelector(`.slide[data-unique-id="${slide.uniqueId}"]`) as HTMLElement;
-      if (slideElement) {
-        slideElement.style.transform = this.getSlideTransform(index);
-        slideElement.style.transition = noTransition ? 'none' : 'transform 0.5s ease';
-      }
-    });
+    const slides = document.querySelectorAll('.slide') as NodeListOf<HTMLElement>;
 
-    // const slide = document.querySelector('.slides') as HTMLElement;
-    // slide.style.setProperty('--current-translate', `${this.currentTranslate}px`);
+    const arcAngle = 10; // Угол между слайдами
+    const distance = 2400; // Радиус (расстояние до центра вращения)
+
+    slides.forEach((slide, index) => {
+      const relativeIndex = (index - this.indexCenter() + this.slides.length) % this.slides.length;
+
+      // Вычисляем угол для текущего слайда с учетом deltaX
+      const angle = arcAngle * (relativeIndex - Math.floor(this.slides.length / 2)) + this.deltaX() / 10;
+      const translateX = distance * Math.cos(angle * (Math.PI / 180));
+      const translateY = distance * Math.sin(angle * (Math.PI / 180));
+
+      // Устанавливаем позицию слайда
+      slide.style.transform = `translate(${translateX}px, ${translateY}px) rotate(${angle}deg)`;
+      slide.style.transition = noTransition ? 'none' : 'transform 0.5s ease';
+    });
   }
 
-  getSlideTransform(index: number): string {
+  getSlideTransform(index: number, deltaX: number): string {
     const totalSlides = this.slides.length;
     const relativeIndex = (index - this.indexCenter() + totalSlides) % totalSlides; // Относительный индекс слайда
 
     const arcAngle = 10; // Угол между слайдами
     let angle = arcAngle * (relativeIndex - Math.floor(totalSlides / 2)); // Угол с учетом положения относительно центра
+
+    // Применяем deltaX к углу
+    angle -= deltaX / 10; // Корректировка угла на основе deltaX
 
     const distance = this.screenWidth() < 1024 ? 1000 : 2400; // Расстояние между слайдами
     const translateX = distance * Math.sin(angle * (Math.PI / 180)); // Смещение по X
@@ -239,7 +261,7 @@ export class KaroCircleGalleryComponent implements OnInit {
       this.indexCenter.update(value => (value + 1) % this.slides.length);
     }
     this.updateActiveSlide();
-    // this.cdr.markForCheck();
+    this.updateSlidePosition(); // Убедитесь, что слайды обновляются
   }
 
   previousSlide() {
@@ -251,10 +273,11 @@ export class KaroCircleGalleryComponent implements OnInit {
       this.indexCenter.update(value => (value - 1 + this.slides.length) % this.slides.length);
     }
     this.updateActiveSlide();
-    // this.cdr.markForCheck();
+    this.updateSlidePosition(); // Убедитесь, что слайды обновляются
   }
 
   updateActiveSlide() {
+    // Учитываем только оригинальные слайды для центра
     const centerIndexInOriginal = this.indexCenter() % this.originalSlidesLength;
 
     this.slides.forEach((slide, index) => {
