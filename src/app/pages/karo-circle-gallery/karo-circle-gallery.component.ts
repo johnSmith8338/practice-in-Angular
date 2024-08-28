@@ -51,7 +51,7 @@ export interface CardsData {
     ])
   ]
 })
-export class KaroCircleGalleryComponent implements OnInit, AfterViewInit {
+export class KaroCircleGalleryComponent implements OnInit {
   cardsUrl = 'assets/slides.json';
   http = inject(HttpClient);
   cdr = inject(ChangeDetectorRef);
@@ -112,9 +112,10 @@ export class KaroCircleGalleryComponent implements OnInit, AfterViewInit {
       const delta = Math.round(this.deltaIndex());
       console.log('deltaIndex: ', delta);
       this.slides.forEach((_, index) => {
-        console.log('in effect');
-        const slideElement = document.querySelector(`.slide:nth-child(${index + 1})`) as HTMLElement;
-        slideElement.style.transform = this.getSlideTransform(index, this.deltaX()); // Устанавливаем transform
+        if (this.slides) {
+          const slideElement = document.querySelector(`.slide:nth-child(${index + 1})`) as HTMLElement;
+          slideElement.style.transform = this.getSlideTransform(index, this.deltaX()); // Устанавливаем transform
+        }
       });
     });
   }
@@ -145,10 +146,6 @@ export class KaroCircleGalleryComponent implements OnInit, AfterViewInit {
       this.updateActiveSlide();
       this.cdr.markForCheck();
     });
-  }
-
-  ngAfterViewInit(): void {
-    this.updateSlidePosition();
   }
 
   onPan(event: Event) {
@@ -266,8 +263,8 @@ export class KaroCircleGalleryComponent implements OnInit, AfterViewInit {
     } else {
       this.indexCenter.update(value => (value + 1) % this.slides.length);
     }
-    this.updateActiveSlide();
     this.updateSlidePosition(); // Убедитесь, что слайды обновляются
+    this.updateActiveSlide();
   }
 
   previousSlide() {
@@ -278,8 +275,8 @@ export class KaroCircleGalleryComponent implements OnInit, AfterViewInit {
     } else {
       this.indexCenter.update(value => (value - 1 + this.slides.length) % this.slides.length);
     }
-    this.updateActiveSlide();
     this.updateSlidePosition(); // Убедитесь, что слайды обновляются
+    this.updateActiveSlide();
   }
 
   updateActiveSlide() {
@@ -289,9 +286,6 @@ export class KaroCircleGalleryComponent implements OnInit, AfterViewInit {
     this.slides.forEach((slide, index) => {
       // Устанавливаем класс .active только для слайда, соответствующего centerIndexInOriginal
       slide.isActive = (index % this.originalSlidesLength) === centerIndexInOriginal;
-
-      // console.log('slide id:', slide.id);
-      console.log('indexCenter:', this.indexCenter());
     });
   }
 
