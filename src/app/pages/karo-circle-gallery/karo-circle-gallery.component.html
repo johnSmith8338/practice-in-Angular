@@ -9,9 +9,11 @@
                 <img [src]="item.srcUrl" alt="slide_img">
             </div>
             <p>
-                <span style="color:red">{{item.uniqueId}} </span>
                 <span>{{item.title}} </span>
+                <span style="color:red">uniqueId: {{item.uniqueId}} </span>
                 <span style="color:green">id:{{item.id}} </span>
+                <span style="color:blueviolet">index:{{i}} </span>
+                <span style="color:orange">indexCenter: {{indexCenter()}} </span>
             </p>
         </div>
     </div>

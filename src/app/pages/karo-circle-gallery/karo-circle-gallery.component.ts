@@ -110,7 +110,6 @@ export class KaroCircleGalleryComponent implements OnInit {
     });
     effect(() => {
       const delta = Math.round(this.deltaIndex());
-      console.log('deltaIndex: ', delta);
       this.slides.forEach((_, index) => {
         if (this.slides) {
           const slideElement = document.querySelector(`.slide:nth-child(${index + 1})`) as HTMLElement;
@@ -122,6 +121,8 @@ export class KaroCircleGalleryComponent implements OnInit {
 
   ngOnInit(): void {
     this.getCards().subscribe((data: { slides: Card[] }) => {
+      const visibleSlides = this.visibleSlidesCount() * 2 + 1;
+
       // Инициализируем оригинальный массив слайдов
       const originalSlides = data.slides.map((slide, index) => ({
         ...slide,
