@@ -126,7 +126,7 @@ export class KaroCircleGalleryComponent implements OnInit {
       // Инициализируем оригинальный массив слайдов
       const originalSlides = data.slides.map((slide, index) => ({
         ...slide,
-        uniqueId: index,
+        uniqueId: index
       }));
       this.originalSlidesLength = originalSlides.length;
 
@@ -139,7 +139,7 @@ export class KaroCircleGalleryComponent implements OnInit {
       // Объединяем все слайды в один массив
       this.slides = [...clonedSlides1, ...originalSlides];
 
-      // Устанавливаем indexCenter на середину общего массива
+      const activeSlideIndex = this.slides.findIndex(slide => slide.isActive);
       this.indexCenter.set(0);
 
       // Обновляем отображение
@@ -166,7 +166,7 @@ export class KaroCircleGalleryComponent implements OnInit {
     const deltaX = currentX - this.startX;
     this.deltaX.set(deltaX);
 
-    console.log('deltaX:', deltaX);
+    // console.log('deltaX:', deltaX);
 
     // Обновляем положение слайдов при изменении deltaX
     this.updateSlidePosition();
@@ -228,15 +228,12 @@ export class KaroCircleGalleryComponent implements OnInit {
       // Вычисляем угол для текущего слайда с учетом ограниченного deltaX
       const angle = arcAngle * (relativeIndex - Math.floor(this.slides.length / 2)) + correctedDeltaX / 10;
 
-      const isVisible = this.getSlideState(index);
-
       // Устанавливаем постоянный радиус через transform-origin и вращаем слайды вниз
       slide.style.transformOrigin = `center ${distance}px`; // Смещение вниз на расстояние `distance`
       slide.style.transform = `rotate(${angle}deg)`;
 
       // Добавляем плавность анимации
       slide.style.transition = noTransition ? 'none' : 'transform 0.5s ease';
-      slide.style.opacity = isVisible ? '1' : '0';
     });
   }
 
