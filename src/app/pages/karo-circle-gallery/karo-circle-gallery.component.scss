@@ -51,14 +51,6 @@ img {
     height: var(--slide-height-mob);
   }
 
-  &.visible {
-    animation: fadeIn 200ms forwards;
-  }
-
-  &.hidden {
-    animation: fadeOut 200ms forwards;
-  }
-
   &.active {
     p {
       opacity: 1;

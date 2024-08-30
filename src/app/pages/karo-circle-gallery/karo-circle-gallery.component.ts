@@ -104,7 +104,6 @@ export class KaroCircleGalleryComponent implements OnInit {
 
   constructor() {
     this.deltaX();
-    console.log('deltaX: ', this.deltaX())
     window.addEventListener('resize', () => {
       this.screenWidth.set(window.innerWidth);
     });
@@ -130,16 +129,20 @@ export class KaroCircleGalleryComponent implements OnInit {
       }));
       this.originalSlidesLength = originalSlides.length;
 
-      // Создаем две дополнительные копии слайдов с уникальными идентификаторами
-      const clonedSlides1 = originalSlides.map((slide, index) => ({
-        ...slide,
-        uniqueId: index + this.originalSlidesLength,
-      }));
+      if (this.originalSlidesLength >= visibleSlides) {
+        const clonedSlides1 = originalSlides.map((slide, index) => ({
+          ...slide,
+          uniqueId: index + this.originalSlidesLength,
+        }));
 
-      // Объединяем все слайды в один массив
-      this.slides = [...clonedSlides1, ...originalSlides];
+        // Объединяем все слайды в один массив
+        if (this.originalSlidesLength % 2) {
+          this.slides = [...clonedSlides1, ...originalSlides];
+        }
+      } else {
+        this.slides = [...originalSlides];
+      }
 
-      const activeSlideIndex = this.slides.findIndex(slide => slide.isActive);
       this.indexCenter.set(0);
 
       // Обновляем отображение
@@ -178,10 +181,47 @@ export class KaroCircleGalleryComponent implements OnInit {
     // Вычисляем новый индекс центра
     this.calculateIndexCenter();
 
+
+    const observer = new MutationObserver((mutationsList) => {
+      mutationsList.forEach((mutation) => {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+          const slide = mutation.target as HTMLElement;
+          const transform = slide.style.transform;
+
+          // Проверяем, есть ли трансформация rotate и извлекаем значение угла
+          const match = transform.match(/rotate\(([-\d.]+)deg\)/);
+          if (match) {
+            const angle = parseFloat(match[1]);
+
+            // Условие для проверки угла и изменения прозрачности
+            if (Math.abs(angle) > 30) {
+              slide.style.opacity = '0';
+            }
+          }
+        }
+      });
+    });
+
+    const slides = document.querySelectorAll('.slide');
+    slides.forEach(slide => {
+      observer.observe(slide, { attributes: true });
+    });
+    // Возвращаем прозрачность после завершения перемещения
+    setTimeout(() => {
+      slides.forEach(slide => {
+        const slideElement = slide as HTMLElement;
+        slideElement.style.opacity = '1';
+      });
+
+      // Отключаем наблюдателя после завершения перемещения
+      observer.disconnect();
+    }, 300);
+
+
     // Сбрасываем deltaX и обновляем слайдер
-    this.deltaX.set(0);
     this.updateSlidePosition();
     this.updateActiveSlide();
+    this.deltaX.set(0);
     this.cdr.markForCheck();
   }
 
@@ -214,22 +254,25 @@ export class KaroCircleGalleryComponent implements OnInit {
 
   updateSlidePosition(noTransition = false) {
     const slides = document.querySelectorAll('.slide') as NodeListOf<HTMLElement>;
+    if (Math.abs(this.deltaX()) > 650) {
+      this.deltaX() > 0 ? this.deltaX.set(650) : this.deltaX.set(-650);
+      console.log(this.deltaX())
+    } else {
+      this.deltaX.set(this.deltaX());
+    }
+    // console.log('this.deltaX()', this.deltaX());
 
     const arcAngle = 12; // Угол между слайдами
     const distance = 2600; // Радиус (расстояние до центра вращения)
-
-    // Ограничиваем значение deltaX
-    const maxDelta = this.screenWidth(); // Пример: макс. deltaX равен ширине экрана
-    const correctedDeltaX = Math.min(Math.max(this.deltaX(), -maxDelta), maxDelta);
 
     slides.forEach((slide, index) => {
       const relativeIndex = (index - this.indexCenter() + this.slides.length) % this.slides.length;
 
       // Вычисляем угол для текущего слайда с учетом ограниченного deltaX
-      const angle = arcAngle * (relativeIndex - Math.floor(this.slides.length / 2)) + correctedDeltaX / 10;
+      const angle = arcAngle * (relativeIndex - Math.floor(this.slides.length / 2)) + this.deltaX() / 50;
 
       // Устанавливаем постоянный радиус через transform-origin и вращаем слайды вниз
-      slide.style.transformOrigin = `center ${distance}px`; // Смещение вниз на расстояние `distance`
+      slide.style.transformOrigin = `center ${distance}px`;
       slide.style.transform = `rotate(${angle}deg)`;
 
       // Добавляем плавность анимации
@@ -238,18 +281,17 @@ export class KaroCircleGalleryComponent implements OnInit {
   }
 
   getSlideTransform(index: number, deltaX: number): string {
+    const slides = document.querySelectorAll('.slide') as NodeListOf<HTMLElement>;
     const totalSlides = this.slides.length;
     const relativeIndex = (index - this.indexCenter() + totalSlides) % totalSlides; // Относительный индекс слайда
 
     const arcAngle = 12; // Угол между слайдами
-    let angle = arcAngle * (relativeIndex - Math.floor(totalSlides / 2)); // Угол с учетом положения относительно центра
-
-    // Применяем deltaX к углу
-    angle -= deltaX / 10; // Корректировка угла на основе deltaX
+    let angle = arcAngle * (relativeIndex - Math.floor(totalSlides / 2)) + this.deltaX() / 50; // Угол с учетом deltaX
 
     const radius = this.screenWidth() < 1024 ? 1000 : 2600; // Радиус вращения
-    const slideElement = document.querySelector(`.slide:nth-child(${index + 1})`) as HTMLElement;
-    slideElement.style.transformOrigin = `center ${radius}px`; // Устанавливаем transform-origin
+    slides.forEach((slide, index) => {
+      slide.style.transformOrigin = `center ${radius}px`;
+    });
     return `rotate(${angle}deg)`;
   }
 
