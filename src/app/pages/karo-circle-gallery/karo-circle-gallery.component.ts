@@ -16,8 +16,10 @@ export interface Card {
   id: number;
   srcUrl: string;
   title: string;
+  text?: string;
   isActive: boolean;
   isVisible: boolean;
+  isOpen?: boolean;
   uniqueId?: number;
 }
 export interface CardsData {
@@ -263,7 +265,7 @@ export class KaroCircleGalleryComponent implements OnInit {
     // console.log('this.deltaX()', this.deltaX());
 
     const arcAngle = 12; // Угол между слайдами
-    const distance = 2600; // Радиус (расстояние до центра вращения)
+    const distance = this.screenWidth() < 1024 ? 1000 : 2600; // Радиус (расстояние до центра вращения)
 
     slides.forEach((slide, index) => {
       const relativeIndex = (index - this.indexCenter() + this.slides.length) % this.slides.length;
@@ -276,7 +278,7 @@ export class KaroCircleGalleryComponent implements OnInit {
       slide.style.transform = `rotate(${angle}deg)`;
 
       // Добавляем плавность анимации
-      slide.style.transition = noTransition ? 'none' : 'transform 0.5s ease';
+      slide.style.transition = noTransition ? 'none' : '500ms ease';
     });
   }
 
@@ -343,26 +345,63 @@ export class KaroCircleGalleryComponent implements OnInit {
 
   toggleOpen(index: number): void {
     const slideElement = document.querySelector(`.slide:nth-child(${index + 1})`) as HTMLElement;
-    const imgWrapper = document.querySelector(`.img-wrapper`) as HTMLElement;
-    if (slideElement.classList.contains('opened')) {
-      slideElement.classList.remove('opened');
-      slideElement.style.setProperty('width', `${this.slideWidth()}px`);
-      slideElement.style.setProperty('height', `${this.slideHeight()}px`);
-    } else {
-      slideElement.classList.add('opened');
-      const sliderContainer = document.querySelector('.slider-container') as HTMLElement;
-      const sliderContainerParams = sliderContainer.getBoundingClientRect();
-      const slideElementParams = slideElement.getBoundingClientRect();
-      const imgWrapperParams = imgWrapper.getBoundingClientRect();
+    const sliderContainer = document.querySelector('.slider-container') as HTMLElement;
+    const imgWrapper = document.querySelector('.img-wrapper') as HTMLElement;
+    const infoBlocks = document.querySelectorAll('.info-block') as NodeListOf<HTMLElement>;
 
-      slideElement.style.setProperty('transform', `translate(0px,0px)`);
+    if (!slideElement || !sliderContainer || !imgWrapper) return;
+
+    // Рассчитываем ширину info-block по умолчанию
+    const sliderContainerParams = sliderContainer.getBoundingClientRect();
+    const infoBlockWidth = sliderContainerParams.width - (sliderContainerParams.width / 2.2);
+
+    // Устанавливаем ширину для всех info-block по умолчанию
+    infoBlocks.forEach((block) => {
+      block.style.width = `${Math.round(infoBlockWidth)}px`;
+    });
+
+    const toggleClass = (element: HTMLElement, className: string) => {
+      element.classList.toggle(className);
+    };
+
+    const setSlideDimensions = (width: string, height: string, transform?: string) => {
+      slideElement.style.setProperty('width', width);
+      slideElement.style.setProperty('height', height);
+      if (transform) {
+        slideElement.style.setProperty('transform', transform);
+      }
+    };
+
+    if (slideElement.classList.contains('opened')) {
+      toggleClass(slideElement, 'opened');
+
+      infoBlocks.forEach((block, i) => {
+        if (i === index) {
+          block.classList.remove('opened');
+        }
+      });
+
+      setSlideDimensions(`${this.slideWidth()}px`, `${this.slideHeight()}px`);
+    } else {
+      toggleClass(slideElement, 'opened');
+
+      infoBlocks.forEach((block, i) => {
+        if (i === index) {
+          block.classList.add('opened');
+        }
+      });
+
+      setSlideDimensions(`${this.slideWidth()}px`, `${this.slideHeight()}px`, 'translate(0px,0px)');
+
+      const transitionDuration = 500;
+      const openedSlideWidth = sliderContainerParams.width / 2.2;
+      setSlideDimensions(`${openedSlideWidth}px`, `${sliderContainerParams.height}px`);
+
       setTimeout(() => {
-        slideElement.style.setProperty('transform',
-          `translate(${(sliderContainerParams.width / 2) - (this.slideWidth() / 2)}px,
-          ${(slideElementParams.height - sliderContainerParams.height) / 2}px)`);
-        slideElement.style.setProperty('width', `${sliderContainerParams.width / 2.2}px`);
-        slideElement.style.setProperty('height', `${sliderContainerParams.height}px`);
-      }, 1000)
+        const slideParams = slideElement.getBoundingClientRect();
+        const transform = `translate(${Math.floor(sliderContainerParams.right - slideParams.right)}px, ${-sliderContainerParams.top}px)`;
+        setSlideDimensions(`${Math.round(openedSlideWidth)}px`, `${Math.round(sliderContainerParams.height)}px`, transform);
+      }, transitionDuration);
     }
   }
 }

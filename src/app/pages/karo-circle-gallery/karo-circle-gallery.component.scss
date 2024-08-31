@@ -45,6 +45,7 @@ img {
   user-select: none;
   top: 0;
   left: 0;
+  animation: 300ms fadeIn ease;
 
   @media screen and (max-width: 1024px) {
     width: var(--slide-width-mob);
@@ -66,6 +67,8 @@ img {
 
     .img-wrapper {
       border-radius: 0;
+      width: 100%;
+      height: 100%;
     }
   }
 
@@ -99,6 +102,33 @@ img {
   }
 }
 
+.info-block {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transform: translateX(-300%);
+  transition: 1200ms;
+  background: black;
+  color: white;
+  opacity: 0;
+  z-index: 1;
+  overflow-y: auto;
+  padding: 64px 24px;
+
+  button {
+    position: sticky;
+    top: 0px;
+    width: 100%;
+  }
+
+  &.opened {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
 .prev,
 .next {
   position: fixed;
@@ -120,15 +150,5 @@ img {
 
   to {
     opacity: 1;
-  }
-}
-
-@keyframes fadeOut {
-  from {
-    opacity: 1;
-  }
-
-  to {
-    opacity: 0;
   }
 }
